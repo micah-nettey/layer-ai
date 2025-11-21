@@ -1,4 +1,5 @@
-import type { LayerConfig, RequestOptions, LayerError } from './types.js';
+import type { LayerConfig, RequestOptions } from './types.js';
+import type { ErrorResponse } from '@layer/types';
 
 export class Layer {
   private apiKey: string; 
@@ -28,7 +29,7 @@ export class Layer {
     const data = await response.json();
 
     if (!response.ok) {
-      const error = data as LayerError;
+      const error = data as ErrorResponse;
       throw new Error(error.message || error.error);
     }
 

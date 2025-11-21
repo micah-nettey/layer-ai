@@ -13,7 +13,9 @@
   "keywords": ["ai", "llm", "openai", "anthropic", "proxy"],
   "author": "micah-layer",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@layer/types": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.9.3"
   }
