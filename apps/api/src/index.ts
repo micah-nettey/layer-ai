@@ -34,7 +34,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/v1/complete', completeRouter);
 app.use('/v1/gates', gatesRouter);
-app.use('/api/keys', keysRouter);
+app.use('/v1/keys', keysRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/analytics', analyticsRouter);
 
