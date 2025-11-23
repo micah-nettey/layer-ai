@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "@google/generative-ai": "^0.1.1",
+    "@google/genai": "^1.30.0",
     "@layer/types": "workspace:*",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

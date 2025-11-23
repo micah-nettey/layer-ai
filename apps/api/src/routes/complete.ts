@@ -4,7 +4,8 @@ import { db } from '../lib/db/postgres.js';
 import { cache } from '../lib/db/redis.js';
 import { authenticate } from '../middleware/auth.js';
 import * as openai from '../services/providers/openai.js';
-import * as anthropic from '../services/providers/anthropic.js'
+import * as anthropic from '../services/providers/anthropic.js';
+import * as google from '../services/providers/google.js';
 import type { CompletionRequest, CompletionResponse, Gate, Message, SupportedModel, OverrideConfig } from '@layer/types';
 import { MODEL_REGISTRY } from '@layer/types';
 
@@ -69,10 +70,16 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       systemPrompt: gateConfig.systemPrompt,
     };
 
-    if (provider === 'openai') { // i'll change this comparison later
-      result = await openai.createCompletion(finalParams);
-    } else {
-      result = await anthropic.createCompletion(finalParams);
+    switch (provider) {
+      case 'openai': 
+        result = await openai.createCompletion(finalParams);
+        break;
+      case 'anthropic': 
+        result = await anthropic.createCompletion(finalParams);
+        break;
+      case 'google':
+        result = await google.createCompletion(finalParams);
+        break;
     }
 
     const latencyMs = Date.now() - startTime;

@@ -45,6 +45,21 @@ export const MODEL_REGISTRY = {
     displayName: 'Claude 3.5 Haiku',
     pricing: { input: 0.0008, output: 0.004 },
   },
+  'gemini-2.0-flash': {
+    provider: 'google' as const,
+    displayName: 'Gemini 2.0 Flash',
+    pricing: { input: 0.0001, output: 0.0004 },
+  },
+  'gemini-2.5-pro': {
+    provider: 'google' as const,
+    displayName: 'Gemini 2.5 Pro',
+    pricing: { input: 0.00125, output: 0.01 },
+  },
+  'gemini-2.5-flash': {
+    provider: 'google' as const,
+    displayName: 'Gemini 2.5 Flash',
+    pricing: { input: 0.000075, output: 0.0003 },
+  },
 } as const;
 
 // Derive types from registry
