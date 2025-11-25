@@ -77,18 +77,22 @@ export interface CreateGateRequest {
   maxTokens?: number;
   topP?: number;
   tags?: string[];
+  routingStrategy?: 'single' | 'fallback' | 'round-robin';
+  fallbackModels?: SupportedModel[];
 }
 
 // Gate update request
 export interface UpdateGateRequest {
   description?: string;
-  model: SupportedModel;
+  model?: SupportedModel;
   systemPrompt?: string;
   allowOverrides?: boolean | OverrideConfig;
   temperature?: number;
   maxTokens?: number;
   topP?: number;
   tags?: string[];
+  routingStrategy?: 'single' | 'fallback' | 'round-robin';
+  fallbackModels?: SupportedModel[];
 }
 
 // Gate with analytics

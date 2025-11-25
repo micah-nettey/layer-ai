@@ -13,8 +13,8 @@ const router: RouterType = Router();
 
 // MARK:- Helpers
 
-function isOverrideAllowed(allowOverrides: boolean | OverrideConfig | undefined, field: keyof OverrideConfig): boolean {
-  if (allowOverrides === undefined || allowOverrides === true) return true;
+function isOverrideAllowed(allowOverrides: boolean | OverrideConfig | undefined | null, field: keyof OverrideConfig): boolean {
+  if (allowOverrides === undefined || allowOverrides === null || allowOverrides === true) return true;
   if (allowOverrides === false) return false;
   return allowOverrides[field] ?? false;
 }
@@ -47,39 +47,62 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     if (!gateConfig) {
       gateConfig = await db.getGateByUserAndName(userId, gateName);
       if(!gateConfig) {
-        res.status(400).json({ error: 'not_found', message: `Gate "${gateName}" not found` });
+        res.status(404).json({ error: 'not_found', message: `Gate "${gateName}" not found` });
         return;
       }
       await cache.setGate(userId, gateName, gateConfig);
     }
 
-    // Determine final model (check if override is allowed)
     const finalModel = (model && isOverrideAllowed(gateConfig.allowOverrides, 'model') && MODEL_REGISTRY[model as SupportedModel])
       ? model as SupportedModel
       : gateConfig.model;
 
-    const provider = MODEL_REGISTRY[finalModel].provider;
-    let result: openai.ProviderResponse;
-
     const finalParams = {
       model: finalModel,
       messages,
-      temperature: isOverrideAllowed(gateConfig.allowOverrides, 'temperature') ? (temperature ?? gateConfig.temperature) : gateConfig.temperature, // change this to not use strings hardcoded
+      temperature: isOverrideAllowed(gateConfig.allowOverrides, 'temperature') ? (temperature ?? gateConfig.temperature) : gateConfig.temperature,
       maxTokens: isOverrideAllowed(gateConfig.allowOverrides, 'maxTokens') ? (maxTokens ?? gateConfig.maxTokens) : gateConfig.maxTokens,
       topP: isOverrideAllowed(gateConfig.allowOverrides, 'topP') ? (topP ?? gateConfig.topP) : gateConfig.topP,
       systemPrompt: gateConfig.systemPrompt,
     };
 
-    switch (provider) {
-      case 'openai': 
-        result = await openai.createCompletion(finalParams);
+    const modelsToTry: SupportedModel[] = [finalModel];
+    if (gateConfig.routingStrategy === 'fallback' && gateConfig.fallbackModels?.length) {
+      modelsToTry.push(...gateConfig.fallbackModels);
+    }
+
+    let result: openai.ProviderResponse | null = null;
+    let lastError: Error | null = null;
+    let modelUsed: SupportedModel = finalModel;
+
+    for (const modelToTry of modelsToTry) {
+      try {
+        const provider = MODEL_REGISTRY[modelToTry].provider;
+        const params = { ...finalParams, model: modelToTry };
+
+        switch (provider) {
+          case 'openai':
+            result = await openai.createCompletion(params);
+            break;
+          case 'anthropic':
+            result = await anthropic.createCompletion(params);
+            break;
+          case 'google':
+            result = await google.createCompletion(params);
+            break;
+        }
+
+        modelUsed = modelToTry;
         break;
-      case 'anthropic': 
-        result = await anthropic.createCompletion(finalParams);
-        break;
-      case 'google':
-        result = await google.createCompletion(finalParams);
-        break;
+      } catch (error) {
+        lastError = error as Error;
+        console.log(`Model ${modelToTry} failed, trying next fallback...`, error instanceof Error ? error.message : error);
+        continue;
+      }
+    }
+
+    if (!result) {
+      throw lastError || new Error('All models failed');
     }
 
     const latencyMs = Date.now() - startTime;
@@ -89,12 +112,12 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       gateId: gateConfig.id,
       gateName,
       modelRequested: model || gateConfig.model,
-      modelUsed: finalModel,
+      modelUsed: modelUsed,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
       totalTokens: result.totalTokens,
       costUsd: result.costUsd,
-      latencyMs, 
+      latencyMs,
       success: true,
       errorMessage: null,
       userAgent: req.headers['user-agent'] || null,
@@ -103,7 +126,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
 
     const response: CompletionResponse = {
       content: result?.content,
-      model: finalModel,
+      model: modelUsed,
       usage: {
         promptTokens: result.promptTokens,
         completionTokens: result.completionTokens,

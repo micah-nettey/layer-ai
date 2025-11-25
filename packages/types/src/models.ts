@@ -34,6 +34,8 @@ export interface Gate {
   maxTokens?: number;
   topP?: number;
   tags?: string[];
+  routingStrategy?: 'single' | 'fallback' | 'round-robin';
+  fallbackModels?: SupportedModel[];
   createdAt: Date;
   updatedAt: Date;
 }
