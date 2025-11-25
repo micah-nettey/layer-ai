@@ -47,6 +47,13 @@ export interface OverrideConfig {
   topP?: boolean;
 }
 
+export enum OverrideField {
+  Model = 'model',
+  Temperature = 'temperature',
+  MaxTokens = 'maxTokens',
+  TopP = 'topP',
+}
+
 // Request log
 export interface Request {
   id: string; 
