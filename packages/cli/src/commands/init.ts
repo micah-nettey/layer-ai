@@ -8,20 +8,18 @@ export const initCommand = new Command('init')
   .action(async (options) => {
     const configPath = 'layer.config.yaml';
 
-    // Check if file already exists
     if (existsSync(configPath) && !options.force) {
       console.error(chalk.red('✗ layer.config.yaml already exists'));
       console.log(chalk.dim('Use --force to overwrite'));
       process.exit(1);
     }
 
-    // Template configuration with examples and comments
     const template = `# Layer AI Configuration File
 #
 # This file defines "gates" - named configurations for AI model interactions.
 # Each gate specifies which model to use and how to configure it.
 #
-# Learn more: https://docs.layer.ai
+# Learn more: https://docs.uselayer.ai
 
 gates:
   # Example gate configuration
@@ -56,7 +54,6 @@ gates:
   #   temperature: 0.5
 `;
 
-    // Write template file
     try {
       writeFileSync(configPath, template, 'utf-8');
 

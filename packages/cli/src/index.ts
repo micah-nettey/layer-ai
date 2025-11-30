@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { validateCommand } from './commands/validate.js';
 import { initCommand } from './commands/init.js';
+import { loginCommand } from './commands/login.js';
 
 // Get package.json for version
 const __filename = fileURLToPath(import.meta.url);
@@ -15,7 +16,6 @@ const packageJson = JSON.parse(
 );
 
 const program = new Command();
-program.addCommand(initCommand);
 
 program
   .name('layer')
@@ -24,5 +24,7 @@ program
 
 // Register commands
 program.addCommand(validateCommand);
+program.addCommand(initCommand);
+program.addCommand(loginCommand);
 
 program.parse();
