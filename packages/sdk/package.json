@@ -1,18 +1,45 @@
 {
-  "name": "layer-ai",
+  "name": "@layer-ai/sdk",
   "version": "0.1.0",
-  "description": "Official Layer SDK for Node.js",
+  "description": "TypeScript SDK for Layer AI - Manage LLM requests with intelligent routing and fallbacks",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist"
   },
-  "keywords": ["ai", "llm", "openai", "anthropic", "proxy"],
-  "author": "micah-layer",
+  "keywords": [
+    "ai",
+    "llm",
+    "openai",
+    "anthropic",
+    "google",
+    "gemini",
+    "claude",
+    "gpt",
+    "gateway",
+    "proxy",
+    "routing",
+    "fallback"
+  ],
+  "author": "Micah Nettey",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/micah-nettey/layer-ai.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/micah-nettey/layer-ai/issues"
+  },
+  "homepage": "https://github.com/micah-nettey/layer-ai#readme",
   "dependencies": {
     "@layer-ai/types": "workspace:*"
   },

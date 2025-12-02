@@ -48,13 +48,18 @@ export class Layer {
     const url = `${this.baseUrl}${path}`;
 
     const response = await fetch(url, {
-      method, 
+      method,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.apiKey}`,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
+
+    // Handle 204 No Content responses (e.g., DELETE operations)
+    if (response.status === 204) {
+      return undefined as T;
+    }
 
     const data = await response.json();
 

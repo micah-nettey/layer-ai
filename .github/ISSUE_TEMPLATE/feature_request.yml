@@ -1,0 +1,75 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the form below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like
+      placeholder: I would like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: I've considered...
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Layer AI would this affect?
+      options:
+        - SDK (@layer-ai/sdk)
+        - CLI (@layer-ai/cli)
+        - API (apps/api)
+        - Config (@layer-ai/config)
+        - Types (@layer-ai/types)
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: How would you use this feature? Provide code examples if applicable
+      render: typescript
+      placeholder: |
+        // Example of how this feature would be used
+        const layer = new Layer({ ... });
+        await layer.newFeature();
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation
+      options:
+        - label: I'm willing to implement this feature myself
+          required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or examples

@@ -2,10 +2,14 @@
   "name": "@layer-ai/cli",
   "version": "0.1.0",
   "type": "module",
-  "description": "cli tool for layer ai",
+  "description": "Command-line interface for Layer AI - Manage gates, API keys, and configuration",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "layer": "./dist/index.js"
   },
@@ -20,6 +24,28 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist"
   },
+  "keywords": [
+    "ai",
+    "llm",
+    "cli",
+    "layer",
+    "openai",
+    "anthropic",
+    "google",
+    "gateway",
+    "management"
+  ],
+  "author": "Micah Nettey",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/micah-nettey/layer-ai.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/micah-nettey/layer-ai/issues"
+  },
+  "homepage": "https://github.com/micah-nettey/layer-ai#readme",
   "dependencies": {
     "@layer-ai/types": "workspace:*",
     "@layer-ai/config": "workspace:*",
