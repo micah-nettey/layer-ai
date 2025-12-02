@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { getLayerClient } from '../lib/api-client.js';
+import { pullGatesToConfig } from '../lib/sync.js';
 import { MODEL_REGISTRY } from '@layer-ai/types';
 
 export const gateCommand = new Command('gate')
@@ -178,8 +179,9 @@ gateCommand
       }]);
 
       if (shouldPull) {
-        // TODO: Call pull logic here once implemented
-        console.log(chalk.dim('Run "layer pull" to sync this gate to layer.config.yaml'));
+        const remoteGates = await layer.gates.list();
+        await pullGatesToConfig(remoteGates);
+        console.log(chalk.green('✓ Updated layer.config.yaml'));
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to create gate'));
@@ -229,7 +231,9 @@ gateCommand
       }]);
 
       if (shouldPull) {
-        console.log(chalk.dim('Run "layer pull" to sync this gate to layer.config.yaml'));
+        const remoteGates = await layer.gates.list();
+        await pullGatesToConfig(remoteGates);
+        console.log(chalk.green('✓ Updated layer.config.yaml'));
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to update gate'));

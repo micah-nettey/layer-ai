@@ -1,11 +1,9 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import inquirer from 'inquirer';
 import { getLayerClient } from '../lib/api-client.js';
-import { parseYAML } from '@layer-ai/config';
-import YAML from 'yaml';
-import type { GateConfig, LayerConfigFile } from '@layer-ai/types';
+import { pullGatesToConfig, readLocalConfig } from '../lib/sync.js';
+import type { GateConfig } from '@layer-ai/types';
 
 export const pullCommand = new Command('pull')
   .description('Pull gates from remote to layer.config.yaml')
@@ -25,12 +23,7 @@ export const pullCommand = new Command('pull')
       }
 
       // Read local config if exists
-      let localGates: GateConfig[] = [];
-      if (existsSync(configPath)) {
-        const content = readFileSync(configPath, 'utf-8');
-        const config = parseYAML(content) as LayerConfigFile;
-        localGates = config.gates || [];
-      }
+      const localGates = readLocalConfig(configPath);
 
       // Build gate maps by name
       const localGateMap = new Map(localGates.map(g => [g.name, g]));
@@ -92,36 +85,8 @@ export const pullCommand = new Command('pull')
         }
       }
 
-      // Convert remote gates to config format
-      const gateConfigs: GateConfig[] = remoteGates.map(gate => {
-        const config: GateConfig = {
-          name: gate.name,
-          model: gate.model,
-        };
-
-        if (gate.description) config.description = gate.description;
-        if (gate.systemPrompt) config.systemPrompt = gate.systemPrompt;
-        if (gate.allowOverrides !== undefined) config.allowOverrides = gate.allowOverrides;
-        if (gate.temperature !== undefined) config.temperature = gate.temperature;
-        if (gate.maxTokens !== undefined) config.maxTokens = gate.maxTokens;
-        if (gate.topP !== undefined) config.topP = gate.topP;
-        if (gate.tags && gate.tags.length > 0) config.tags = gate.tags;
-        if (gate.routingStrategy) config.routingStrategy = gate.routingStrategy;
-        if (gate.fallbackModels && gate.fallbackModels.length > 0) {
-          config.fallbackModels = gate.fallbackModels;
-        }
-
-        return config;
-      });
-
-      // Write to YAML file
-      const config = { gates: gateConfigs };
-      const yamlContent = YAML.stringify(config, {
-        indent: 2,
-        lineWidth: 0,
-      });
-
-      writeFileSync(configPath, yamlContent, 'utf-8');
+      // Pull gates to config file
+      await pullGatesToConfig(remoteGates, configPath);
 
       console.log(chalk.green(`\n✓ Pulled ${remoteGates.length} gate(s) to ${configPath}`));
       if (toUpdate.length > 0 || toDelete.length > 0) {
