@@ -96,6 +96,9 @@ importers:
       '@layer-ai/config':
         specifier: workspace:*
         version: link:../config
+      '@layer-ai/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@layer-ai/types':
         specifier: workspace:*
         version: link:../types
@@ -108,9 +111,6 @@ importers:
       inquirer:
         specifier: ^13.0.1
         version: 13.0.1(@types/node@20.19.25)
-      layer-ai:
-        specifier: workspace:*
-        version: link:../sdk
       ora:
         specifier: ^8.0.1
         version: 8.2.0

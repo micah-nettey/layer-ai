@@ -92,7 +92,7 @@ gateCommand
 
       console.log(chalk.green('Recommended routing strategy: fallback'));
       console.log(chalk.green('Recommended fallback models:'));
-      suggestions.alternatives.forEach((model, index) => {
+      suggestions.alternatives.forEach((model: string, index: number) => {
         console.log(chalk.cyan(`  ${index + 1}. ${model}`));
       });
 

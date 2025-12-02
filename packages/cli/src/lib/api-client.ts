@@ -1,4 +1,4 @@
-import { Layer } from 'layer-ai';
+import { Layer } from '@layer-ai/sdk';
 import { getActiveProfile } from './cli-config.js';
 
 

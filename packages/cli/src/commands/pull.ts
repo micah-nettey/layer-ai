@@ -26,8 +26,8 @@ export const pullCommand = new Command('pull')
       const localGates = readLocalConfig(configPath);
 
       // Build gate maps by name
-      const localGateMap = new Map(localGates.map(g => [g.name, g]));
-      const remoteGateMap = new Map(remoteGates.map(g => [g.name, g]));
+      const localGateMap = new Map(localGates.map((g: GateConfig) => [g.name, g]));
+      const remoteGateMap = new Map(remoteGates.map((g: GateConfig) => [g.name, g]));
 
       // Categorize changes
       const toAdd: typeof remoteGates = [];
@@ -52,17 +52,17 @@ export const pullCommand = new Command('pull')
 
       if (toAdd.length > 0) {
         console.log(chalk.green('\nWill add:'));
-        toAdd.forEach(g => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        toAdd.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
       }
 
       if (toUpdate.length > 0) {
         console.log(chalk.yellow('\nWill update (local overwritten with remote):'));
-        toUpdate.forEach(g => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        toUpdate.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
       }
 
       if (toDelete.length > 0) {
         console.log(chalk.red('\nWill delete (not on remote):'));
-        toDelete.forEach(g => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        toDelete.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
       }
 
       if (toAdd.length === 0 && toUpdate.length === 0 && toDelete.length === 0) {
