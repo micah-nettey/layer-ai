@@ -1,7 +1,7 @@
 {
   "name": "@layer-ai/sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for Layer AI - Manage LLM requests with intelligent routing and fallbacks",
+  "version": "0.1.1",
+  "description": "Configure multiple AI models at runtime without code changes or deployments",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
