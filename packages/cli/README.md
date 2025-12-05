@@ -197,58 +197,9 @@ This command:
 
 ## Configuration File
 
-Layer uses a YAML configuration file (`layer.config.yaml`) to define gates:
+Layer uses a YAML configuration file (`layer.config.yaml`) to define gates.
 
-```yaml
-gates:
-  - name: default
-    model: gpt-4o
-    description: Default gate for general queries
-    systemPrompt: You are a helpful assistant
-    temperature: 0.7
-    maxTokens: 1000
-    topP: 1.0
-    allowOverrides: true
-    routingStrategy: fallback
-    fallbackModels:
-      - claude-sonnet-4
-      - gemini-2.0-flash-exp
-    tags:
-      - production
-      - general
-
-  - name: code-assistant
-    model: claude-sonnet-4
-    description: Specialized for code generation
-    systemPrompt: You are an expert programmer
-    temperature: 0.5
-    maxTokens: 2000
-    routingStrategy: single
-    tags:
-      - coding
-```
-
-### Field Reference
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Unique identifier for the gate |
-| `model` | string | Yes | Primary model to use |
-| `description` | string | No | Human-readable description |
-| `systemPrompt` | string | No | System message for the model |
-| `temperature` | number | No | Sampling temperature (0-2) |
-| `maxTokens` | number | No | Maximum tokens to generate |
-| `topP` | number | No | Nucleus sampling threshold (0-1) |
-| `allowOverrides` | boolean/array | No | Allow runtime parameter overrides |
-| `routingStrategy` | string | No | Routing strategy (single, fallback, round-robin) |
-| `fallbackModels` | string[] | No | Backup models for fallback routing |
-| `tags` | string[] | No | Tags for organization |
-
-### Routing Strategies
-
-- **single** (default) - Use only the primary model
-- **fallback** - Try backup models if primary fails
-- **round-robin** - Distribute requests across all models
+For complete configuration documentation including field reference, routing strategies, best practices, and examples, see the [Configuration Guide](../../CONFIG.md).
 
 ## Workflow
 

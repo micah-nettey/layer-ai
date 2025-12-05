@@ -117,7 +117,7 @@ const gate = await layer.gates.get('my-gate');
 
 #### `layer.gates.create(data)` ⚠️ Requires Admin Mode
 
-Create a new gate.
+Create a new gate. For detailed information about gate configuration fields, see the [Configuration Guide](../../CONFIG.md).
 
 ```typescript
 await layer.gates.create({
