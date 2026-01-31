@@ -17,7 +17,7 @@ import {
   MODEL_REGISTRY,
   SupportedModel,
 } from '@layer-ai/sdk';
-import type { Provider } from "../../lib/provider-constants.js";
+import type { Provider } from '../../lib/provider-constants.js';
 
 export { ADAPTER_HANDLED };
 
@@ -156,8 +156,11 @@ export abstract class BaseProviderAdapter {
       return 0;
     }
     const pricing = modelInfo.pricing;
-    const inputCost = promptTokens / 1000000 * pricing.input;
-    const outputCost = ('output' in pricing && pricing.output) ? (completionTokens / 1000000 * pricing.output) : 0;
+    const inputCost = (promptTokens / 1000000) * pricing.input;
+    const outputCost =
+      'output' in pricing && pricing.output
+        ? (completionTokens / 1000000) * pricing.output
+        : 0;
     return inputCost + outputCost;
   }
 
@@ -168,14 +171,19 @@ export abstract class BaseProviderAdapter {
     count: number = 1
   ): number {
     const modelInfo = MODEL_REGISTRY[model as SupportedModel];
-    if (!modelInfo || !('imagePricing' in modelInfo) || !modelInfo.imagePricing) {
+    if (
+      !modelInfo ||
+      !('imagePricing' in modelInfo) ||
+      !modelInfo.imagePricing
+    ) {
       return 0;
     }
 
     const imagePricing = modelInfo.imagePricing as Record<string, number>;
 
     // Build pricing key from quality and size (e.g., 'hd-1024x1024' or 'standard-1024x1024')
-    const pricingKey = quality && size ? `${quality}-${size}` : size || 'standard-1024x1024';
+    const pricingKey =
+      quality && size ? `${quality}-${size}` : size || 'standard-1024x1024';
     const pricePerImage = imagePricing[pricingKey];
 
     if (!pricePerImage) {
@@ -193,7 +201,11 @@ export abstract class BaseProviderAdapter {
     count: number = 1
   ): number {
     const modelInfo = MODEL_REGISTRY[model as SupportedModel];
-    if (!modelInfo || !('videoPricing' in modelInfo) || !modelInfo.videoPricing) {
+    if (
+      !modelInfo ||
+      !('videoPricing' in modelInfo) ||
+      !modelInfo.videoPricing
+    ) {
       return 0;
     }
 

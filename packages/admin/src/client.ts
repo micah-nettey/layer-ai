@@ -36,7 +36,7 @@ export class LayerAdmin {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -45,7 +45,7 @@ export class LayerAdmin {
       return undefined as T;
     }
 
-    const data = await response.json(); 
+    const data = await response.json();
 
     if (!response.ok) {
       const error = data as ErrorResponse;

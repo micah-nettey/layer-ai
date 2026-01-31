@@ -2,7 +2,10 @@
  * Detects which significant fields have changed between existing and new gate configurations.
  * Returns array of field names that changed. Only tracks fields that warrant a history snapshot.
  */
-export function detectSignificantChanges(existing: any, updates: any): string[] {
+export function detectSignificantChanges(
+  existing: any,
+  updates: any
+): string[] {
   const changedFields: string[] = [];
 
   const normalizeArray = (val: any): string => {
@@ -18,7 +21,11 @@ export function detectSignificantChanges(existing: any, updates: any): string[] 
     return JSON.stringify(val || []);
   };
 
-  const hasChanged = (field: string, existingVal: any, newVal: any): boolean => {
+  const hasChanged = (
+    field: string,
+    existingVal: any,
+    newVal: any
+  ): boolean => {
     if (newVal === undefined) return false;
 
     if (field === 'fallbackModels') {

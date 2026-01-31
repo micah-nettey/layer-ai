@@ -3,8 +3,9 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { getLayerClient } from '../lib/api-client.js';
 
-export const keyCommand = new Command('key')
-  .description('Manage Layer API keys');
+export const keyCommand = new Command('key').description(
+  'Manage Layer API keys'
+);
 
 keyCommand
   .command('create <name>')
@@ -15,13 +16,17 @@ keyCommand
       const result = await layer.keys.create({ name });
 
       console.log(chalk.green(`✓ Created API key '${name}'`));
-      console.log(chalk.cyan('\nAPI Key (save this - it will not be shown again):'));
+      console.log(
+        chalk.cyan('\nAPI Key (save this - it will not be shown again):')
+      );
       console.log(chalk.yellow(result.key));
       console.log(chalk.dim(`\nKey ID: ${result.id}`));
       console.log(chalk.dim(`Prefix: ${result.keyPrefix}`));
     } catch (error) {
       console.error(chalk.red('✗ Failed to create API key'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -46,14 +51,22 @@ keyCommand
           ? new Date(key.lastUsedAt).toLocaleDateString()
           : 'Never';
 
-        console.log(chalk.cyan(`  • ${key.name}`) + chalk.dim(` (${key.keyPrefix}...)`));
+        console.log(
+          chalk.cyan(`  • ${key.name}`) + chalk.dim(` (${key.keyPrefix}...)`)
+        );
         console.log(chalk.dim(`    ID: ${key.id}`));
-        console.log(chalk.dim(`    Created: ${new Date(key.createdAt).toLocaleDateString()}`));
+        console.log(
+          chalk.dim(
+            `    Created: ${new Date(key.createdAt).toLocaleDateString()}`
+          )
+        );
         console.log(chalk.dim(`    Last used: ${lastUsed}\n`));
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to list API keys'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -63,12 +76,14 @@ keyCommand
   .description('Revoke an API key')
   .action(async (id: string) => {
     try {
-      const { confirm } = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'confirm',
-        message: `Are you sure you want to revoke API key '${id}'?`,
-        default: false
-      }]);
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: `Are you sure you want to revoke API key '${id}'?`,
+          default: false,
+        },
+      ]);
 
       if (!confirm) {
         console.log(chalk.dim('Cancelled'));
@@ -80,7 +95,9 @@ keyCommand
       console.log(chalk.green(`✓ Revoked API key '${id}'`));
     } catch (error) {
       console.error(chalk.red('✗ Failed to revoke API key'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });

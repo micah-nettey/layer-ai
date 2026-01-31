@@ -59,8 +59,12 @@ gates:
 
       console.log(chalk.green(`✓ Created ${configPath}`));
       console.log(chalk.dim('\nNext steps:'));
-      console.log(chalk.dim('1. Edit layer.config.yaml to configure your gates'));
-      console.log(chalk.dim('2. Run "layer validate" to check your configuration'));
+      console.log(
+        chalk.dim('1. Edit layer.config.yaml to configure your gates')
+      );
+      console.log(
+        chalk.dim('2. Run "layer validate" to check your configuration')
+      );
     } catch (error) {
       console.error(chalk.red('✗ Failed to write config file:'));
       console.error(error instanceof Error ? error.message : String(error));

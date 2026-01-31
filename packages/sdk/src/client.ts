@@ -1,5 +1,15 @@
 import type { LayerConfig, RequestOptions } from './types/index.js';
-import type { ErrorResponse, LayerRequestInput, LayerResponse, ChatRequest, ImageGenerationRequest, VideoGenerationRequest, EmbeddingsRequest, TextToSpeechRequest, OCRRequest } from './types/index.js';
+import type {
+  ErrorResponse,
+  LayerRequestInput,
+  LayerResponse,
+  ChatRequest,
+  ImageGenerationRequest,
+  VideoGenerationRequest,
+  EmbeddingsRequest,
+  TextToSpeechRequest,
+  OCRRequest,
+} from './types/index.js';
 
 export class Layer {
   private apiKey: string;
@@ -21,7 +31,7 @@ export class Layer {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: body ? JSON.stringify(body) : undefined,
     });

@@ -5,9 +5,9 @@ export interface CreateKeyRequest {
 
 // key creation response
 export interface CreateKeyResponse {
-  id: string; 
-  name: string; 
+  id: string;
+  name: string;
   key: string; // full key only returned on creation
   keyPrefix: string;
-  createdAt: Date; 
+  createdAt: Date;
 }

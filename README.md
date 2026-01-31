@@ -31,13 +31,13 @@ import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
   apiKey: process.env.LAYER_API_KEY,
-  baseUrl: 'http://localhost:3001'
+  baseUrl: 'http://localhost:3001',
 });
 
 // Complete a request through a gate
 const response = await layer.complete({
   gate: 'my-gate',
-  prompt: 'What is the capital of France?'
+  prompt: 'What is the capital of France?',
 });
 
 console.log(response.text);

@@ -1,5 +1,11 @@
 import pg from 'pg';
-import type { User, ApiKey, Gate, Request as RequestLog, ProviderKey } from '@layer-ai/sdk';
+import type {
+  User,
+  ApiKey,
+  Gate,
+  Request as RequestLog,
+  ProviderKey,
+} from '@layer-ai/sdk';
 
 const { Pool } = pg;
 
@@ -10,7 +16,10 @@ function getPool(): pg.Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
       max: 20, // max num of connections
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
@@ -33,13 +42,22 @@ function getPool(): pg.Pool {
 function toCamelCase(obj: any): any {
   if (!obj) return obj;
 
-  const converted: any = {}
+  const converted: any = {};
   for (const key in obj) {
-    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
+      letter.toUpperCase()
+    );
     let value = obj[key];
 
     // Convert numeric strings to numbers for specific fields
-    if ((camelKey === 'temperature' || camelKey === 'topP' || camelKey === 'costWeight' || camelKey === 'latencyWeight' || camelKey === 'qualityWeight') && typeof value === 'string') {
+    if (
+      (camelKey === 'temperature' ||
+        camelKey === 'topP' ||
+        camelKey === 'costWeight' ||
+        camelKey === 'latencyWeight' ||
+        camelKey === 'qualityWeight') &&
+      typeof value === 'string'
+    ) {
       value = parseFloat(value);
     }
     if (camelKey === 'maxTokens' && typeof value === 'string') {
@@ -54,12 +72,12 @@ function toCamelCase(obj: any): any {
 
 // Database query functions
 export const db = {
-  // generic query function 
+  // generic query function
   async query(text: string, params?: any[]) {
     const start = Date.now();
     const res = await getPool().query(text, params);
-    const duration = Date.now() - start; 
-    console.log('Executed query', { text, duration, rows: res.rowCount});
+    const duration = Date.now() - start;
+    console.log('Executed query', { text, duration, rows: res.rowCount });
     return res;
   },
 
@@ -73,10 +91,9 @@ export const db = {
   },
 
   async getUserById(id: string): Promise<User | null> {
-    const result = await getPool().query(
-      'SELECT * FROM users WHERE id = $1',
-      [id]
-    );
+    const result = await getPool().query('SELECT * FROM users WHERE id = $1', [
+      id,
+    ]);
     return result.rows[0] ? toCamelCase(result.rows[0]) : null;
   },
 
@@ -99,13 +116,18 @@ export const db = {
   // API Keys
   async getApiKeyByHash(keyHash: string): Promise<ApiKey | null> {
     const result = await getPool().query(
-      'SELECT * FROM api_keys WHERE key_hash = $1 AND is_active = true', 
+      'SELECT * FROM api_keys WHERE key_hash = $1 AND is_active = true',
       [keyHash]
     );
     return result.rows[0] ? toCamelCase(result.rows[0]) : null;
   },
 
-  async createApiKey(userId: string, keyHash: string, keyPrefix: string, name: string): Promise<ApiKey> {
+  async createApiKey(
+    userId: string,
+    keyHash: string,
+    keyPrefix: string,
+    name: string
+  ): Promise<ApiKey> {
     const result = await getPool().query(
       'INSERT INTO api_keys (user_id, key_hash, key_prefix, name) VALUES ($1, $2, $3, $4) RETURNING *',
       [userId, keyHash, keyPrefix, name]
@@ -117,7 +139,7 @@ export const db = {
     await getPool().query(
       'UPDATE api_keys SET last_used_at = NOW() WHERE key_hash = $1',
       [keyHash]
-    )
+    );
   },
 
   async getApiKeysForUser(userId: string): Promise<ApiKey[]> {
@@ -137,7 +159,10 @@ export const db = {
   },
 
   // Gates
-  async getGateByUserAndName(userId: string, gateName: string): Promise<Gate | null> {
+  async getGateByUserAndName(
+    userId: string,
+    gateName: string
+  ): Promise<Gate | null> {
     const result = await getPool().query(
       'SELECT * FROM gates WHERE user_id = $1 AND name = $2 AND deleted_at IS NULL',
       [userId, gateName]
@@ -145,7 +170,10 @@ export const db = {
     return result.rows[0] ? toCamelCase(result.rows[0]) : null;
   },
 
-  async getGateByUserAndId(userId: string, gateId: string): Promise<Gate | null> {
+  async getGateByUserAndId(
+    userId: string,
+    gateId: string
+  ): Promise<Gate | null> {
     const result = await getPool().query(
       'SELECT * FROM gates WHERE user_id = $1 AND id = $2 AND deleted_at IS NULL',
       [userId, gateId]
@@ -165,28 +193,28 @@ export const db = {
     const result = await getPool().query(
       `INSERT INTO gates (user_id, name, description, task_type, model, system_prompt, allow_overrides, temperature, max_tokens, top_p, tags, routing_strategy, fallback_models, cost_weight, latency_weight, quality_weight, analysis_method, reanalysis_period, auto_apply_recommendations, task_analysis)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *`,
-       [
-         userId,
-         data.name,
-         data.description,
-         data.taskType,
-         data.model,
-         data.systemPrompt,
-         data.allowOverrides ? JSON.stringify(data.allowOverrides) : null,
-         data.temperature,
-         data.maxTokens,
-         data.topP,
-         JSON.stringify(data.tags || []),
-         data.routingStrategy || 'fallback',
-         JSON.stringify(data.fallbackModels || []),
-         data.costWeight ?? 0.33,
-         data.latencyWeight ?? 0.33,
-         data.qualityWeight ?? 0.34,
-         data.analysisMethod || 'balanced',
-         data.reanalysisPeriod || 'never',
-         data.autoApplyRecommendations ?? false,
-         data.taskAnalysis ? JSON.stringify(data.taskAnalysis) : null
-       ]
+      [
+        userId,
+        data.name,
+        data.description,
+        data.taskType,
+        data.model,
+        data.systemPrompt,
+        data.allowOverrides ? JSON.stringify(data.allowOverrides) : null,
+        data.temperature,
+        data.maxTokens,
+        data.topP,
+        JSON.stringify(data.tags || []),
+        data.routingStrategy || 'fallback',
+        JSON.stringify(data.fallbackModels || []),
+        data.costWeight ?? 0.33,
+        data.latencyWeight ?? 0.33,
+        data.qualityWeight ?? 0.34,
+        data.analysisMethod || 'balanced',
+        data.reanalysisPeriod || 'never',
+        data.autoApplyRecommendations ?? false,
+        data.taskAnalysis ? JSON.stringify(data.taskAnalysis) : null,
+      ]
     );
     return toCamelCase(result.rows[0]);
   },
@@ -267,13 +295,24 @@ export const db = {
       error_message, user_agent, ip_address, request_payload, response_payload)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
       [
-        data.userId, data.gateId, data.gateName, data.modelRequested, data.modelUsed, data.promptTokens,
-        data.completionTokens, data.totalTokens, data.costUsd, data.latencyMs, data.success,
-        data.errorMessage, data.userAgent, data.ipAddress,
+        data.userId,
+        data.gateId,
+        data.gateName,
+        data.modelRequested,
+        data.modelUsed,
+        data.promptTokens,
+        data.completionTokens,
+        data.totalTokens,
+        data.costUsd,
+        data.latencyMs,
+        data.success,
+        data.errorMessage,
+        data.userAgent,
+        data.ipAddress,
         data.requestPayload ? JSON.stringify(data.requestPayload) : '{}',
-        data.responsePayload ? JSON.stringify(data.responsePayload) : null
+        data.responsePayload ? JSON.stringify(data.responsePayload) : null,
       ]
-    )
+    );
   },
 
   async getRequestLogs(
@@ -287,7 +326,14 @@ export const db = {
       offset?: number;
     }
   ): Promise<any[]> {
-    const { gateId, success, startDate, endDate, limit = 100, offset = 0 } = options || {};
+    const {
+      gateId,
+      success,
+      startDate,
+      endDate,
+      limit = 100,
+      offset = 0,
+    } = options || {};
 
     let query = 'SELECT * FROM requests WHERE user_id = $1';
     const params: any[] = [userId];
@@ -325,7 +371,9 @@ export const db = {
   },
 
   // Session Keys
-  async getSessionKeyByHash(keyHash: string): Promise<{ userId: string; expiresAt: Date } | null> {
+  async getSessionKeyByHash(
+    keyHash: string
+  ): Promise<{ userId: string; expiresAt: Date } | null> {
     const result = await getPool().query(
       'SELECT user_id, expires_at FROM session_keys WHERE key_hash = $1 AND expires_at > NOW()',
       [keyHash]
@@ -349,14 +397,16 @@ export const db = {
   },
 
   async deleteSessionKeysForUser(userId: string): Promise<void> {
-    await getPool().query(
-      'DELETE FROM session_keys WHERE user_id = $1',
-      [userId]
-    );
+    await getPool().query('DELETE FROM session_keys WHERE user_id = $1', [
+      userId,
+    ]);
   },
 
   // Provider Keys (BYOK)
-  async getProviderKey(userId: string, provider: string): Promise<ProviderKey | null> {
+  async getProviderKey(
+    userId: string,
+    provider: string
+  ): Promise<ProviderKey | null> {
     const result = await getPool().query(
       'SELECT * FROM provider_keys WHERE user_id = $1 AND provider = $2 AND deleted_at IS NULL',
       [userId, provider]
@@ -411,7 +461,11 @@ export const db = {
     return (result.rowCount ?? 0) > 0;
   },
 
-  async toggleProviderKeyActive(userId: string, provider: string, isActive: boolean): Promise<ProviderKey | null> {
+  async toggleProviderKeyActive(
+    userId: string,
+    provider: string,
+    isActive: boolean
+  ): Promise<ProviderKey | null> {
     const result = await getPool().query(
       `UPDATE provider_keys
        SET is_active = $3, updated_at = NOW()
@@ -422,7 +476,10 @@ export const db = {
     return result.rows[0] ? toCamelCase(result.rows[0]) : null;
   },
 
-  async hardDeleteProviderKey(userId: string, provider: string): Promise<boolean> {
+  async hardDeleteProviderKey(
+    userId: string,
+    provider: string
+  ): Promise<boolean> {
     const result = await getPool().query(
       'DELETE FROM provider_keys WHERE user_id = $1 AND provider = $2',
       [userId, provider]
@@ -460,7 +517,9 @@ export const db = {
         gate.name,
         gate.description,
         gate.model,
-        typeof gate.fallbackModels === 'string' ? gate.fallbackModels : JSON.stringify(gate.fallbackModels || []),
+        typeof gate.fallbackModels === 'string'
+          ? gate.fallbackModels
+          : JSON.stringify(gate.fallbackModels || []),
         gate.routingStrategy,
         gate.temperature,
         gate.maxTokens,
@@ -470,12 +529,16 @@ export const db = {
         gate.qualityWeight ?? 0.34,
         gate.analysisMethod ?? 'balanced',
         gate.taskType,
-        typeof gate.taskAnalysis === 'string' ? gate.taskAnalysis : (gate.taskAnalysis ? JSON.stringify(gate.taskAnalysis) : null),
+        typeof gate.taskAnalysis === 'string'
+          ? gate.taskAnalysis
+          : gate.taskAnalysis
+            ? JSON.stringify(gate.taskAnalysis)
+            : null,
         gate.systemPrompt,
         gate.reanalysisPeriod ?? 'never',
         gate.autoApplyRecommendations ?? false,
         appliedBy,
-        changedFields ? JSON.stringify(changedFields) : null
+        changedFields ? JSON.stringify(changedFields) : null,
       ]
     );
 
@@ -512,7 +575,10 @@ export const db = {
     return result.rows[0] ? toCamelCase(result.rows[0]) : null;
   },
 
-  async getAllGatesHistory(userId: string, limit: number = 100): Promise<any[]> {
+  async getAllGatesHistory(
+    userId: string,
+    limit: number = 100
+  ): Promise<any[]> {
     const result = await getPool().query(
       `SELECT gh.* FROM gate_history gh
        JOIN gates g ON gh.gate_id = g.id
@@ -549,7 +615,10 @@ export const db = {
     return result.rows.map(toCamelCase);
   },
 
-  async getAllGatesActivity(userId: string, limit: number = 100): Promise<any[]> {
+  async getAllGatesActivity(
+    userId: string,
+    limit: number = 100
+  ): Promise<any[]> {
     const result = await getPool().query(
       `SELECT gal.*, u.email as user_email
        FROM gate_activity_log gal
@@ -576,7 +645,11 @@ export const db = {
     return result.rows.map(toCamelCase);
   },
 
-  async rollbackGate(gateId: string, historyId: string, userId: string): Promise<Gate | null> {
+  async rollbackGate(
+    gateId: string,
+    historyId: string,
+    userId: string
+  ): Promise<Gate | null> {
     // Get the historical configuration
     const historyEntry = await this.getGateHistoryById(historyId);
 
@@ -621,7 +694,9 @@ export const db = {
         historyEntry.name,
         historyEntry.description,
         historyEntry.model,
-        typeof historyEntry.fallbackModels === 'string' ? historyEntry.fallbackModels : JSON.stringify(historyEntry.fallbackModels || []),
+        typeof historyEntry.fallbackModels === 'string'
+          ? historyEntry.fallbackModels
+          : JSON.stringify(historyEntry.fallbackModels || []),
         historyEntry.routingStrategy,
         historyEntry.temperature,
         historyEntry.maxTokens,
@@ -631,10 +706,14 @@ export const db = {
         historyEntry.qualityWeight ?? 0.34,
         historyEntry.analysisMethod ?? 'balanced',
         historyEntry.taskType,
-        typeof historyEntry.taskAnalysis === 'string' ? historyEntry.taskAnalysis : (historyEntry.taskAnalysis ? JSON.stringify(historyEntry.taskAnalysis) : null),
+        typeof historyEntry.taskAnalysis === 'string'
+          ? historyEntry.taskAnalysis
+          : historyEntry.taskAnalysis
+            ? JSON.stringify(historyEntry.taskAnalysis)
+            : null,
         historyEntry.systemPrompt,
         historyEntry.reanalysisPeriod ?? 'never',
-        historyEntry.autoApplyRecommendations ?? false
+        historyEntry.autoApplyRecommendations ?? false,
       ]
     );
 
@@ -649,7 +728,7 @@ export const db = {
         historyId: historyId,
         rolledBackTo: historyEntry.createdAt,
         previousModel: currentGate.model,
-        newModel: historyEntry.model
+        newModel: historyEntry.model,
       });
     }
 
@@ -657,4 +736,4 @@ export const db = {
   },
 };
 
-export default getPool; 
+export default getPool;

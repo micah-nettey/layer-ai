@@ -7,6 +7,7 @@ This guide will help you migrate from Layer SDK v0.x to v1.0.0. The new version 
 ### 🔄 Two Separate Packages
 
 **v0.x (Old):**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -22,6 +23,7 @@ await layer.keys.create({ name: 'api-key' });
 ```
 
 **v1.0.0 (New):**
+
 ```typescript
 // For inference - lightweight, focused on completions
 import { Layer } from '@layer-ai/sdk';
@@ -43,6 +45,7 @@ await admin.keys.create({ name: 'api-key' });
 ### 1. SDK Package (`@layer-ai/sdk`)
 
 #### Removed Methods
+
 The SDK is now **inference-only**. All admin methods have been removed:
 
 - ❌ `layer.gates.*` - Moved to `@layer-ai/admin`
@@ -50,6 +53,7 @@ The SDK is now **inference-only**. All admin methods have been removed:
 - ❌ `layer.logs.*` - Moved to `@layer-ai/admin`
 
 #### What Remains
+
 - ✅ `layer.complete()` - Make inference requests
 - ✅ `layer.models.*` - Model registry utilities
 - ✅ All types are still exported
@@ -74,6 +78,7 @@ await admin.gates.delete('123e4567-e89b-12d3-a456-426614174000');
 ```
 
 **When do you use names?** Only when **creating** a new gate:
+
 ```typescript
 const gate = await admin.gates.create({
   name: 'my-gate',  // Name used here for creation
@@ -94,7 +99,7 @@ The `complete()` method now uses a structured format:
 const response = await layer.complete({
   gate: 'my-gate',
   messages: [{ role: 'user', content: 'Hello' }],
-  temperature: 0.7
+  temperature: 0.7,
 });
 
 // ✅ New (v1.0.0)
@@ -102,8 +107,8 @@ const response = await layer.complete({
   gate: 'gate-id',
   data: {
     messages: [{ role: 'user', content: 'Hello' }],
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  },
 });
 ```
 
@@ -123,6 +128,7 @@ npm install @layer-ai/admin@^0.1.0      # For admin operations
 ### Step 2: Update Inference Code
 
 **Before (v0.x):**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -130,48 +136,46 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 
 const response = await layer.complete({
   gate: 'coding-assistant',
-  messages: [
-    { role: 'user', content: 'Write a hello world function' }
-  ]
+  messages: [{ role: 'user', content: 'Write a hello world function' }],
 });
 
 console.log(response.choices[0].message.content);
 ```
 
 **After (v1.0.0):**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 
 const response = await layer.complete({
-  gate: '435282da-4548-4e08-8f9e-a6104803fb8a',  // Use gate ID
+  gate: '435282da-4548-4e08-8f9e-a6104803fb8a', // Use gate ID
   data: {
-    messages: [
-      { role: 'user', content: 'Write a hello world function' }
-    ]
-  }
+    messages: [{ role: 'user', content: 'Write a hello world function' }],
+  },
 });
 
-console.log(response.content);  // Response format also changed
+console.log(response.content); // Response format also changed
 ```
 
 ### Step 3: Update Admin Code
 
 **Before (v0.x):**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
   apiKey: process.env.LAYER_ADMIN_KEY,
-  adminMode: true
+  adminMode: true,
 });
 
 // Create a gate
 const gate = await layer.gates.create({
   name: 'my-gate',
   model: 'gpt-4o-mini',
-  systemPrompt: 'You are a helpful assistant'
+  systemPrompt: 'You are a helpful assistant',
 });
 
 // List API keys
@@ -182,25 +186,26 @@ const logs = await layer.logs.list({ limit: 10 });
 ```
 
 **After (v1.0.0):**
+
 ```typescript
 import { LayerAdmin } from '@layer-ai/admin';
 
 const admin = new LayerAdmin({
-  apiKey: process.env.LAYER_ADMIN_KEY
+  apiKey: process.env.LAYER_ADMIN_KEY,
 });
 
 // Create a gate (name used only for creation)
 const gate = await admin.gates.create({
   name: 'my-gate',
   model: 'gpt-4o-mini',
-  systemPrompt: 'You are a helpful assistant'
+  systemPrompt: 'You are a helpful assistant',
 });
 
-console.log(gate.id);  // '123e4567-...' - Use this ID for future operations
+console.log(gate.id); // '123e4567-...' - Use this ID for future operations
 
 // Update the gate (using ID)
 await admin.gates.update(gate.id, {
-  temperature: 0.8
+  temperature: 0.8,
 });
 
 // List API keys
@@ -220,7 +225,7 @@ import type {
   GateConfig,
   Log,
   ApiKey,
-  SupportedModel
+  SupportedModel,
 } from '@layer-ai/sdk';
 ```
 
@@ -246,6 +251,7 @@ Most apps only need the SDK for inference, saving ~100KB!
 ### Pattern 1: Chatbot Application
 
 **Before:**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -254,12 +260,13 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 async function chat(message: string) {
   return await layer.complete({
     gate: 'chatbot',
-    messages: [{ role: 'user', content: message }]
+    messages: [{ role: 'user', content: message }],
   });
 }
 ```
 
 **After:**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -267,10 +274,10 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 
 async function chat(message: string) {
   return await layer.complete({
-    gate: process.env.CHATBOT_GATE_ID!,  // Store gate ID in env
+    gate: process.env.CHATBOT_GATE_ID!, // Store gate ID in env
     data: {
-      messages: [{ role: 'user', content: message }]
-    }
+      messages: [{ role: 'user', content: message }],
+    },
   });
 }
 ```
@@ -278,23 +285,25 @@ async function chat(message: string) {
 ### Pattern 2: Admin Dashboard
 
 **Before:**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
   apiKey: process.env.LAYER_ADMIN_KEY,
-  adminMode: true
+  adminMode: true,
 });
 
 // Dashboard code using layer.gates.*, layer.keys.*, etc.
 ```
 
 **After:**
+
 ```typescript
 import { LayerAdmin } from '@layer-ai/admin';
 
 const admin = new LayerAdmin({
-  apiKey: process.env.LAYER_ADMIN_KEY
+  apiKey: process.env.LAYER_ADMIN_KEY,
 });
 
 // Dashboard code using admin.gates.*, admin.keys.*, etc.
@@ -303,6 +312,7 @@ const admin = new LayerAdmin({
 ### Pattern 3: Full-Stack Application
 
 **Before:**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -311,6 +321,7 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 ```
 
 **After:**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 import { LayerAdmin } from '@layer-ai/admin';
@@ -327,6 +338,7 @@ const admin = new LayerAdmin({ apiKey: process.env.LAYER_ADMIN_KEY });
 **Cause:** Trying to use admin methods on the SDK client.
 
 **Solution:** Import and use `LayerAdmin` instead:
+
 ```typescript
 import { LayerAdmin } from '@layer-ai/admin';
 const admin = new LayerAdmin({ apiKey: 'your-key' });
@@ -337,12 +349,13 @@ const admin = new LayerAdmin({ apiKey: 'your-key' });
 **Cause:** Using a gate name instead of gate ID.
 
 **Solution:** Use the gate UUID from your dashboard:
+
 ```typescript
 // ❌ Wrong
-gate: 'my-gate-name'
+gate: 'my-gate-name';
 
 // ✅ Correct
-gate: '435282da-4548-4e08-8f9e-a6104803fb8a'
+gate: '435282da-4548-4e08-8f9e-a6104803fb8a';
 ```
 
 ### Error: "Missing required field: data.messages"
@@ -350,6 +363,7 @@ gate: '435282da-4548-4e08-8f9e-a6104803fb8a'
 **Cause:** Not wrapping messages in a `data` object.
 
 **Solution:**
+
 ```typescript
 // ❌ Wrong
 { gate: 'id', messages: [...] }
@@ -367,9 +381,9 @@ gate: '435282da-4548-4e08-8f9e-a6104803fb8a'
 
 ## Version Compatibility
 
-| Package | Version | Status |
-|---------|---------|--------|
-| `@layer-ai/sdk` | v0.x | ⚠️ Deprecated |
-| `@layer-ai/sdk` | v1.0.0+ | ✅ Current |
-| `@layer-ai/admin` | v0.1.0+ | ✅ Current |
-| `@layer-ai/core` | v0.x | 🔧 Internal use |
+| Package           | Version | Status          |
+| ----------------- | ------- | --------------- |
+| `@layer-ai/sdk`   | v0.x    | ⚠️ Deprecated   |
+| `@layer-ai/sdk`   | v1.0.0+ | ✅ Current      |
+| `@layer-ai/admin` | v0.1.0+ | ✅ Current      |
+| `@layer-ai/core`  | v0.x    | 🔧 Internal use |

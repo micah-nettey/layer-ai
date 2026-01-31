@@ -11,7 +11,7 @@ export async function pullGatesToConfig(
   configPath: string = 'layer.config.yaml'
 ): Promise<void> {
   // Convert remote gates to config format
-  const gateConfigs: GateConfig[] = remoteGates.map(gate => {
+  const gateConfigs: GateConfig[] = remoteGates.map((gate) => {
     const config: GateConfig = {
       name: gate.name,
       model: gate.model,
@@ -20,7 +20,8 @@ export async function pullGatesToConfig(
 
     if (gate.description) config.description = gate.description;
     if (gate.systemPrompt) config.systemPrompt = gate.systemPrompt;
-    if (gate.allowOverrides !== undefined) config.allowOverrides = gate.allowOverrides;
+    if (gate.allowOverrides !== undefined)
+      config.allowOverrides = gate.allowOverrides;
     if (gate.temperature !== undefined) config.temperature = gate.temperature;
     if (gate.maxTokens !== undefined) config.maxTokens = gate.maxTokens;
     if (gate.topP !== undefined) config.topP = gate.topP;
@@ -48,7 +49,9 @@ export async function pullGatesToConfig(
 /**
  * Read local config file
  */
-export function readLocalConfig(configPath: string = 'layer.config.yaml'): GateConfig[] {
+export function readLocalConfig(
+  configPath: string = 'layer.config.yaml'
+): GateConfig[] {
   if (!existsSync(configPath)) {
     return [];
   }

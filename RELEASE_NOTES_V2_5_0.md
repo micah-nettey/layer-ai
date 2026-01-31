@@ -76,12 +76,14 @@ Each endpoint validates its specific requirements and returns clear error messag
 Fixed inconsistency between UI display names and internal type names across the system:
 
 **Before:**
+
 - UI showed: "Text-to-Speech", "Document Processing"
 - Database stored: Mixed display names and internal types
 - Model registry used: `tts`, `document`
 - Result: Type mismatch warnings in logs
 
 **After:**
+
 - UI shows: `TTS (Text-to-Speech)`, `Document (OCR, Processing)`
 - Database stores: Internal types (`tts`, `document`, `stt`, etc.)
 - Model registry uses: Same internal types
@@ -110,6 +112,7 @@ The new type-safe methods are **additive** - you can adopt them gradually at you
 Comprehensive integration tests verify all new endpoints:
 
 ### Embeddings Test Results
+
 ```
 ✅ SDK embeddings() method test passed!
    Duration: 1,299ms
@@ -120,6 +123,7 @@ Comprehensive integration tests verify all new endpoints:
 ```
 
 ### TTS Test Results
+
 ```
 ✅ SDK tts() method test passed!
    Duration: 1,050ms

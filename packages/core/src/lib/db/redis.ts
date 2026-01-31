@@ -3,13 +3,13 @@ import type { Gate } from '@layer-ai/sdk';
 
 // Create redis client
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-  maxRetriesPerRequest: 3, 
+  maxRetriesPerRequest: 3,
   retryStrategy(times) {
     const delay = Math.min(times * 50, 2000);
     return delay;
-  }, 
+  },
   reconnectOnError(err) {
-    const targetError = 'READONLY'; 
+    const targetError = 'READONLY';
     if (err.message.includes(targetError)) {
       // Reconnect when redis is in readonly mode
       return true;
@@ -43,14 +43,14 @@ export const cache = {
   // get the gate
   async getGate(userId: string, gateName: string): Promise<Gate | null> {
     try {
-      const key = getGateCacheKey(userId, gateName); 
+      const key = getGateCacheKey(userId, gateName);
       const cached = await redis.get(key);
 
       if (!cached) {
-        return null
+        return null;
       }
 
-      const gate = JSON.parse(cached); 
+      const gate = JSON.parse(cached);
       gate.createdAt = new Date(gate.createdAt);
       gate.updatedAt = new Date(gate.updatedAt);
 
@@ -100,12 +100,12 @@ export const cache = {
   // Invalidate gate cache
   async invalidateGate(userId: string, gateName: string): Promise<void> {
     try {
-      const key = getGateCacheKey(userId, gateName); 
+      const key = getGateCacheKey(userId, gateName);
       await redis.del(key);
-    } catch(error) {
+    } catch (error) {
       console.error('Redis delete error:', error);
     }
-  }, 
+  },
 
   // Invalidate all gates for a user
   async invalidateUserGates(userId: string): Promise<void> {
@@ -119,15 +119,15 @@ export const cache = {
     } catch (error) {
       console.error('Redis bulk delete error:', error);
     }
-  }, 
+  },
 
-  // health check 
+  // health check
   async ping(): Promise<boolean> {
     try {
-      const result = await redis.ping(); 
-      return result === 'PONG'; 
+      const result = await redis.ping();
+      return result === 'PONG';
     } catch (error) {
-      return false
+      return false;
     }
   },
 };

@@ -20,17 +20,17 @@ yarn add @layer-ai/sdk
 import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
-  apiKey: process.env.LAYER_API_KEY
+  apiKey: process.env.LAYER_API_KEY,
 });
 
 // Make an inference request through a gate
 const response = await layer.complete({
-  gate: '435282da-4548-4e08-8f9e-a6104803fb8a',  // Gate ID (UUID)
+  gate: '435282da-4548-4e08-8f9e-a6104803fb8a', // Gate ID (UUID)
   data: {
     messages: [
-      { role: 'user', content: 'Explain quantum computing in simple terms' }
-    ]
-  }
+      { role: 'user', content: 'Explain quantum computing in simple terms' },
+    ],
+  },
 });
 
 console.log(response.content);
@@ -41,6 +41,7 @@ console.log(response.content);
 See the [Migration Guide](../../MIGRATION_V1.md) for detailed upgrade instructions.
 
 **Key Changes:**
+
 - SDK is now inference-only - use `@layer-ai/admin` for management operations
 - Gate IDs (UUIDs) required instead of gate names
 - Request format changed to include `data` wrapper
@@ -90,10 +91,10 @@ const response = await layer.chat({
   data: {
     messages: [
       { role: 'system', content: 'You are a helpful assistant' },
-      { role: 'user', content: 'Explain quantum computing' }
+      { role: 'user', content: 'Explain quantum computing' },
     ],
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  },
 });
 ```
 
@@ -125,8 +126,8 @@ const response = await layer.image({
   data: {
     prompt: 'A serene landscape with mountains and a lake',
     size: '1024x1024',
-    quality: 'hd'
-  }
+    quality: 'hd',
+  },
 });
 
 console.log(response.imageUrl); // Generated image URL
@@ -172,8 +173,8 @@ Type-safe text embeddings.
 const response = await layer.embeddings({
   gateId: 'my-embeddings-gate-id',
   data: {
-    input: 'Machine learning is fascinating'
-  }
+    input: 'Machine learning is fascinating',
+  },
 });
 
 console.log(response.embeddings[0].length); // Vector dimensions (e.g., 1536)
@@ -204,8 +205,8 @@ const response = await layer.tts({
   gateId: 'my-tts-gate-id',
   data: {
     input: 'Hello, this is a test of text to speech',
-    voice: 'alloy'
-  }
+    voice: 'alloy',
+  },
 });
 
 console.log(response.audio.base64); // Base64 encoded audio
@@ -256,16 +257,16 @@ Send a generic completion request through a gate. This method remains available 
 
 ```typescript
 {
-  content: string;       // Generated text
-  model: string;         // Model used (may differ from requested if fallback occurred)
-  finishReason: string;  // Why generation stopped
+  content: string; // Generated text
+  model: string; // Model used (may differ from requested if fallback occurred)
+  finishReason: string; // Why generation stopped
   usage: {
     promptTokens: number;
     completionTokens: number;
     totalTokens: number;
-  };
-  cost: number;          // Cost in USD
-  latencyMs: number;     // Request latency
+  }
+  cost: number; // Cost in USD
+  latencyMs: number; // Request latency
 }
 ```
 
@@ -277,11 +278,11 @@ const response = await layer.complete({
   data: {
     messages: [
       { role: 'system', content: 'You are a helpful coding assistant' },
-      { role: 'user', content: 'Write a hello world function in Python' }
+      { role: 'user', content: 'Write a hello world function in Python' },
     ],
     temperature: 0.7,
-    maxTokens: 500
-  }
+    maxTokens: 500,
+  },
 });
 
 console.log(response.content);
@@ -302,6 +303,75 @@ const openaiModels = layer.models.getByProvider('openai');
 
 // Get model metadata
 const model = layer.models.get('gpt-4o');
+```
+
+## Advanced Usage Patterns
+
+### Streaming Completions
+
+For real-time user interfaces, use the `stream: true` option to receive text chunks as they are generated.
+
+```typescript
+import { Layer } from '@layer-ai/sdk';
+import type { ChatResponseChunk } from '@layer-ai/sdk';
+
+const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
+
+const stream = await layer.chat({
+  gateId: 'your-gate-uuid',
+  data: {
+    messages: [{ role: 'user', content: 'Explain the theory of relativity' }],
+    stream: true
+  }
+});
+
+// Type-safe iteration over the stream
+for await (const chunk: ChatResponseChunk of stream) {
+  process.stdout.write(chunk.content);
+}
+```
+
+### Professional Error Handling
+
+```typescript
+import { Layer, LayerError } from '@layer-ai/sdk';
+
+try {
+  const response = await layer.chat({
+    gateId: 'my-gate-id',
+    data: { messages: [{ role: 'user', content: 'Hello' }] },
+  });
+} catch (error) {
+  if (error instanceof LayerError) {
+    // Handle SDK-specific errors (Rate limits, Invalid API Key, etc.)
+    console.error(`Layer Error [${error.code}]: ${error.message}`);
+  } else {
+    // Handle generic runtime or connection errors
+    console.error('Unexpected error:', error);
+  }
+}
+```
+
+### Provider Comparison and Model Overrides
+
+```typescript
+const providers = ['gpt-4o', 'claude-3-5-sonnet', 'gemini-1.5-pro'];
+
+for (const model of providers) {
+  console.log(`Testing with ${model}...`);
+
+  const response = await layer.chat({
+    gateId: 'universal-gate-id',
+    model: model, // Overriding the gate's default model
+    data: {
+      messages: [
+        { role: 'user', content: 'What is the best way to bake sourdough?' },
+      ],
+    },
+  });
+
+  console.log(`${model} response:`, response.content);
+}
 ```
 
 ## Smart Routing & Fallbacks
@@ -352,24 +422,8 @@ import type {
   ApiKey,
   SupportedModel,
   LayerRequest,
-  LayerResponse
+  LayerResponse,
 } from '@layer-ai/sdk';
-```
-
-## Error Handling
-
-```typescript
-try {
-  const response = await layer.complete({
-    gate: 'my-gate-id',
-    data: { messages: [...] }
-  });
-} catch (error) {
-  if (error instanceof Error) {
-    console.error('Layer error:', error.message);
-    // Handle: authentication, rate limits, model failures, etc.
-  }
-}
 ```
 
 ## Examples
@@ -385,10 +439,8 @@ async function chat(userMessage: string) {
   const response = await layer.complete({
     gate: process.env.CHATBOT_GATE_ID!,
     data: {
-      messages: [
-        { role: 'user', content: userMessage }
-      ]
-    }
+      messages: [{ role: 'user', content: userMessage }],
+    },
   });
 
   return response.content;
@@ -404,17 +456,17 @@ console.log(answer);
 const messages = [
   { role: 'user', content: 'Hello!' },
   { role: 'assistant', content: 'Hi! How can I help you today?' },
-  { role: 'user', content: 'Tell me about quantum computing' }
+  { role: 'user', content: 'Tell me about quantum computing' },
 ];
 
 const response = await layer.complete({
   gate: 'chat-gate-id',
-  data: { messages }
+  data: { messages },
 });
 
 messages.push({
   role: 'assistant',
-  content: response.content
+  content: response.content,
 });
 ```
 
@@ -423,12 +475,10 @@ messages.push({
 ```typescript
 const response = await layer.complete({
   gate: 'my-gate-id',
-  model: 'claude-sonnet-4',  // Override gate's default model
+  model: 'claude-sonnet-4', // Override gate's default model
   data: {
-    messages: [
-      { role: 'user', content: 'Explain relativity' }
-    ]
-  }
+    messages: [{ role: 'user', content: 'Explain relativity' }],
+  },
 });
 ```
 
@@ -477,6 +527,60 @@ Migrations are located in `@layer-ai/core/dist/lib/db/migrations/`
 
 - [`@layer-ai/admin`](../admin) - Admin SDK for managing gates, keys, and logs
 - [`@layer-ai/core`](../core) - Core API implementation (for self-hosting)
+
+## Configuration Reference
+
+### SDK Constructor Options
+
+When initializing the `Layer` client, you can pass the following configuration:
+
+| Option       | Type     | Required | Description                                 | Default                   |
+| :----------- | :------- | :------- | :------------------------------------------ | :------------------------ |
+| `apiKey`     | `string` | **Yes**  | Your Layer API Key.                         | -                         |
+| `baseUrl`    | `string` | No       | Override the API endpoint for self-hosting. | `https://api.uselayer.ai` |
+| `timeout`    | `number` | No       | Request timeout in milliseconds.            | `30000`                   |
+| `maxRetries` | `number` | No       | Number of automatic retries on 5xx errors.  | `2`                       |
+
+### Chat Request Data Options
+
+The `data` object within `layer.chat()` supports these parameters:
+
+| Parameter     | Type        | Description                                                 |
+| :------------ | :---------- | :---------------------------------------------------------- |
+| `messages`    | `Message[]` | Array of roles ('system', 'user', 'assistant') and content. |
+| `temperature` | `number`    | Sampling temperature (0.0 to 2.0).                          |
+| `maxTokens`   | `number`    | The maximum number of tokens to generate.                   |
+| `stream`      | `boolean`   | Whether to stream the response as chunks.                   |
+
+---
+
+## Best Practices
+
+### Secure Your API Keys
+
+Never commit your `LAYER_API_KEY` to version control. Always use environment variables.
+
+```typescript
+// .env file
+// LAYER_API_KEY=your_secret_key
+
+// Use process.env in your code
+const layer = new Layer({
+  apiKey: process.env.LAYER_API_KEY!,
+});
+```
+
+### Use Specific Gate IDs
+
+While the SDK supports legacy routing, using the **Gate UUID** ensures your requests are routed through the exact configuration you defined in the dashboard.
+
+### Implement Global Catch-Alls
+
+In addition to specific `LayerError` handling, ensure your application has a global error handler to prevent crashes during network outages.
+
+### Leverage Smart Routing for Cost Control
+
+Instead of hardcoding expensive models like `gpt-4o`, configure a **Gate** with smart routing strategies to automatically use cheaper models for simple tasks.
 
 ## License
 

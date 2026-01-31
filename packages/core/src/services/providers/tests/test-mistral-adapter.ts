@@ -43,7 +43,8 @@ async function testChatWithSystemPrompt() {
     type: 'chat',
     model: 'mistral-small-latest',
     data: {
-      systemPrompt: 'You are a helpful assistant that responds in JSON format only.',
+      systemPrompt:
+        'You are a helpful assistant that responds in JSON format only.',
       messages: [
         {
           role: 'user',
@@ -153,9 +154,11 @@ async function testToolResponse() {
   };
 
   const initialResponse = await adapter.call(initialRequest);
-  console.log('Initial response tool calls:', JSON.stringify(initialResponse.toolCalls, null, 2));
+  console.log(
+    'Initial response tool calls:',
+    JSON.stringify(initialResponse.toolCalls, null, 2)
+  );
 
-  
   if (initialResponse.toolCalls && initialResponse.toolCalls.length > 0) {
     const toolCall = initialResponse.toolCalls[0];
 
@@ -242,7 +245,10 @@ async function testVisionCapability() {
     console.log('Vision response:', response.content);
     console.log('Model:', response.model);
   } catch (error) {
-    console.log('Test failed (Mistral could not fetch image URL):', (error as Error).message.substring(0, 100));
+    console.log(
+      'Test failed (Mistral could not fetch image URL):',
+      (error as Error).message.substring(0, 100)
+    );
   }
   console.log();
 }
@@ -316,7 +322,10 @@ async function testOCR() {
 
   try {
     const response = await adapter.call(request);
-    console.log('OCR Response (first 500 chars):', response.content?.substring(0, 500));
+    console.log(
+      'OCR Response (first 500 chars):',
+      response.content?.substring(0, 500)
+    );
     console.log('Model:', response.model);
     console.log('Pages extracted:', response.ocr?.pages?.length || 0);
     console.log('Latency:', response.latencyMs, 'ms');

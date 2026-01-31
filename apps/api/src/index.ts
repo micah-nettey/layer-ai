@@ -12,13 +12,23 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { completeRouter, gatesRouter, keysRouter, authRouter, logsRouter } from '@layer-ai/core';
+import {
+  completeRouter,
+  gatesRouter,
+  keysRouter,
+  authRouter,
+  logsRouter,
+} from '@layer-ai/core';
 
-const app = express()
+const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Request logger middleware
-const requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const requestLogger = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
   const start = Date.now();
   const timestamp = new Date().toISOString();
 
@@ -32,16 +42,18 @@ const requestLogger = (req: express.Request, res: express.Response, next: expres
   // Log response when finished
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`[${timestamp}] ${req.method} ${req.url} ${res.statusCode} (${duration}ms)`);
+    console.log(
+      `[${timestamp}] ${req.method} ${req.url} ${res.statusCode} (${duration}ms)`
+    );
   });
 
   next();
 };
 
 // Middleware
-app.use(helmet())
-app.use(cors())
-app.use(express.json())
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
 // Enable request logging in development
 if (process.env.NODE_ENV !== 'production') {
@@ -50,8 +62,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 // health check route
 app.get('/health', (req, res) => {
-  res.json({status: 'ok', message: 'Layer API is running'});
-})
+  res.json({ status: 'ok', message: 'Layer API is running' });
+});
 
 // Routes
 app.use('/v2/complete', completeRouter);
@@ -62,5 +74,5 @@ app.use('/v1/logs', logsRouter);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Layer API is running on port ${PORT}`); 
-})
+  console.log(`Layer API is running on port ${PORT}`);
+});

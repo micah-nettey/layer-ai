@@ -8,20 +8,25 @@
 // Total models: 77
 
 // Providers we support with adapters
-export const SUPPORTED_PROVIDERS = ['openai', 'anthropic', 'google', 'mistral'] as const;
-export type SupportedProvider = typeof SUPPORTED_PROVIDERS[number];
+export const SUPPORTED_PROVIDERS = [
+  'openai',
+  'anthropic',
+  'google',
+  'mistral',
+] as const;
+export type SupportedProvider = (typeof SUPPORTED_PROVIDERS)[number];
 
 export type ModelType =
-  | 'chat'           // Chat/completion models (GPT-4, Claude, Gemini)
-  | 'image'          // Image generation (DALL-E, Stable Diffusion)
-  | 'video'          // Video generation
-  | 'audio'          // Audio generation (music, sound effects)
-  | 'tts'            // Text-to-speech
-  | 'stt'            // Speech-to-text (Whisper)
-  | 'embeddings'     // Text embeddings
-  | 'document'       // Document processing (OCR)
-  | 'responses'      // Reasoning models (o3-pro)
-  | 'language-completion';  // Legacy completion API
+  | 'chat' // Chat/completion models (GPT-4, Claude, Gemini)
+  | 'image' // Image generation (DALL-E, Stable Diffusion)
+  | 'video' // Video generation
+  | 'audio' // Audio generation (music, sound effects)
+  | 'tts' // Text-to-speech
+  | 'stt' // Speech-to-text (Whisper)
+  | 'embeddings' // Text embeddings
+  | 'document' // Document processing (OCR)
+  | 'responses' // Reasoning models (o3-pro)
+  | 'language-completion'; // Legacy completion API
 
 // Base interface for all models
 interface BaseModelEntry {
@@ -30,14 +35,14 @@ interface BaseModelEntry {
   displayName: string;
   description?: string;
   pricing?: {
-    input?: number;   // Cost per 1K input tokens/units
-    output?: number;  // Cost per 1K output tokens/units
+    input?: number; // Cost per 1K input tokens/units
+    output?: number; // Cost per 1K output tokens/units
   };
-  deprecated?: boolean;           // Model is deprecated, prevent new usage
-  deprecationDate?: string;       // When the model was/will be deprecated
-  shutdownDate?: string;          // When the model will be shut down
-  replacementModel?: string;      // Suggested replacement model ID
-  isAvailable?: boolean;          // Available for use (NOT deprecated AND accessible via API)
+  deprecated?: boolean; // Model is deprecated, prevent new usage
+  deprecationDate?: string; // When the model was/will be deprecated
+  shutdownDate?: string; // When the model will be shut down
+  replacementModel?: string; // Suggested replacement model ID
+  isAvailable?: boolean; // Available for use (NOT deprecated AND accessible via API)
   lastUpdated?: string;
 }
 
@@ -78,7 +83,7 @@ export interface ChatModelEntry extends BaseModelEntry {
 // Image generation models
 export interface ImageModelEntry extends BaseModelEntry {
   type: 'image';
-  imagePricing?: number | Record<string, number>;  // Flat rate or per-size/quality pricing
+  imagePricing?: number | Record<string, number>; // Flat rate or per-size/quality pricing
 }
 
 // Video generation models
@@ -146,14 +151,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -180,14 +185,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -214,14 +219,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -248,14 +253,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -265,7 +270,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'anthropic' as const,
     displayName: 'Claude Opus 4.5',
-    description: 'Premium model combining maximum intelligence with practical performance',
+    description:
+      'Premium model combining maximum intelligence with practical performance',
     pricing: { input: 5, output: 25 },
     benchmarks: {
       intelligence: 43,
@@ -283,14 +289,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -318,14 +324,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -353,14 +359,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -370,7 +376,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 2.0 Flash',
-    description: 'Gemini 2.0 Flash delivers next-gen features and improved capabilities, including superior speed, native tool use, and a 1M token context window.',
+    description:
+      'Gemini 2.0 Flash delivers next-gen features and improved capabilities, including superior speed, native tool use, and a 1M token context window.',
     pricing: { input: 0.1, output: 0.4 },
     benchmarks: {
       intelligence: 12.3,
@@ -384,14 +391,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -401,7 +408,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 2.0 Flash-Lite',
-    description: 'A Gemini 2.0 Flash model optimized for cost efficiency and low latency.',
+    description:
+      'A Gemini 2.0 Flash model optimized for cost efficiency and low latency.',
     pricing: { input: 0.075, output: 0.3 },
     benchmarks: {
       intelligence: 14.7,
@@ -417,14 +425,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -434,7 +442,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 2.5 Flash',
-    description: 'Our best model in terms of price-performance, offering well-rounded capabilities. 2.5 Flash is best for large scale processing, low-latency, high volume tasks that require thinking, and agentic use cases.',
+    description:
+      'Our best model in terms of price-performance, offering well-rounded capabilities. 2.5 Flash is best for large scale processing, low-latency, high volume tasks that require thinking, and agentic use cases.',
     pricing: { input: 0.3, output: 2.5 },
     benchmarks: {
       intelligence: 25.5,
@@ -452,14 +461,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -469,7 +478,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 2.5 Flash-Lite',
-    description: 'Our fastest flash model optimized for cost-efficiency and high throughput.',
+    description:
+      'Our fastest flash model optimized for cost-efficiency and high throughput.',
     pricing: { input: 0.1, output: 0.4 },
     benchmarks: {
       intelligence: 17.4,
@@ -488,14 +498,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -512,14 +522,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -529,7 +539,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 2.5 Pro',
-    description: 'Our state-of-the-art thinking model, capable of reasoning over complex problems in code, math, and STEM, as well as analyzing large datasets, codebases, and documents using long context.',
+    description:
+      'Our state-of-the-art thinking model, capable of reasoning over complex problems in code, math, and STEM, as well as analyzing large datasets, codebases, and documents using long context.',
     pricing: { input: 1.25, output: 10 },
     benchmarks: {
       intelligence: 30.3,
@@ -547,14 +558,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -571,14 +582,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -588,7 +599,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 3 Flash Preview',
-    description: 'Our most balanced model built for speed, scale, and frontier intelligence.',
+    description:
+      'Our most balanced model built for speed, scale, and frontier intelligence.',
     pricing: { input: 0.5, output: 3 },
     benchmarks: {
       intelligence: 35.1,
@@ -607,14 +619,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -624,7 +636,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'google' as const,
     displayName: 'Gemini 3 Pro Preview',
-    description: 'The best model in the world for multimodal understanding, and our most powerful agentic and vibe-coding model yet, delivering richer visuals and deeper interactivity, all built on a foundation of state-of-the-art reasoning.',
+    description:
+      'The best model in the world for multimodal understanding, and our most powerful agentic and vibe-coding model yet, delivering richer visuals and deeper interactivity, all built on a foundation of state-of-the-art reasoning.',
     pricing: { input: 2, output: 12 },
     benchmarks: {
       intelligence: 41.1,
@@ -643,14 +656,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: true,
-        video: true
+        video: true,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -666,14 +679,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -698,14 +711,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -721,14 +734,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: true,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -744,14 +757,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: true,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -767,14 +780,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -789,14 +802,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: true
-      }
+        video: true,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -811,14 +824,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: true
-      }
+        video: true,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -828,7 +841,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Codestral',
-    description: 'Our cutting-edge language model for code completion released end of July 2025.',
+    description:
+      'Our cutting-edge language model for code completion released end of July 2025.',
     benchmarks: {
       intelligence: 68.5,
       coding: 53.5,
@@ -844,14 +858,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -861,20 +875,21 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Codestral',
-    description: 'Our cutting-edge language model for code completion released end of July 2025.',
+    description:
+      'Our cutting-edge language model for code completion released end of July 2025.',
     context: {
       input: {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -884,21 +899,22 @@ export const MODEL_REGISTRY = {
     type: 'embedding' as const,
     provider: 'mistral' as const,
     displayName: 'Codestral Embed',
-    description: 'Our state-of-the-art semantic for extracting representation of code extracts',
+    description:
+      'Our state-of-the-art semantic for extracting representation of code extracts',
     pricing: { input: 0.15, output: 0 },
     context: {
       input: {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -908,7 +924,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Devstral 2',
-    description: 'Our frontier code agents model for solving software engineering tasks.',
+    description:
+      'Our frontier code agents model for solving software engineering tasks.',
     benchmarks: {
       intelligence: 18.6,
       coding: 15.9,
@@ -924,14 +941,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -957,14 +974,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -990,14 +1007,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1007,7 +1024,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Ministral 3 14B',
-    description: 'A powerful model offering best-in-class text and vision capabilities.',
+    description:
+      'A powerful model offering best-in-class text and vision capabilities.',
     benchmarks: {
       intelligence: 16,
       coding: 10.9,
@@ -1023,14 +1041,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1040,7 +1058,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Ministral 3 3B',
-    description: 'A tiny and efficient model offering best-in-class text and vision capabilities.',
+    description:
+      'A tiny and efficient model offering best-in-class text and vision capabilities.',
     benchmarks: {
       intelligence: 11.2,
       coding: 4.8,
@@ -1056,14 +1075,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1073,7 +1092,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Ministral 3 8B',
-    description: 'A powerful and efficient model offering best-in-class text and vision capabilities.',
+    description:
+      'A powerful and efficient model offering best-in-class text and vision capabilities.',
     benchmarks: {
       intelligence: 14.6,
       coding: 10,
@@ -1089,14 +1109,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1106,21 +1126,22 @@ export const MODEL_REGISTRY = {
     type: 'embedding' as const,
     provider: 'mistral' as const,
     displayName: 'Mistral Embed',
-    description: 'Our state-of-the-art semantic for extracting representation of code extracts',
+    description:
+      'Our state-of-the-art semantic for extracting representation of code extracts',
     pricing: { input: 0.1, output: 0 },
     context: {
       input: {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1146,14 +1167,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1179,14 +1200,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1212,14 +1233,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1235,14 +1256,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1266,14 +1287,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1289,14 +1310,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1306,7 +1327,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Pixtral Large',
-    description: 'Our first frontier-class multimodal model released November 2024.',
+    description:
+      'Our first frontier-class multimodal model released November 2024.',
     benchmarks: {
       intelligence: 14,
       math: 2.3,
@@ -1321,14 +1343,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1345,14 +1367,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1362,20 +1384,21 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'mistral' as const,
     displayName: 'Voxtral Small',
-    description: 'Our first model with audio input capabilities for instruct use cases.',
+    description:
+      'Our first model with audio input capabilities for instruct use cases.',
     context: {
       input: {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1386,20 +1409,27 @@ export const MODEL_REGISTRY = {
     provider: 'openai' as const,
     displayName: 'DALL·E 3',
     description: 'Previous generation image generation model',
-    imagePricing: { 'hd-1024x1024': 0.08, 'hd-1024x1792': 0.12, 'hd-1792x1024': 0.12, 'standard-1024x1024': 0.04, 'standard-1024x1792': 0.08, 'standard-1792x1024': 0.08 },
+    imagePricing: {
+      'hd-1024x1024': 0.08,
+      'hd-1024x1792': 0.12,
+      'hd-1792x1024': 0.12,
+      'standard-1024x1024': 0.04,
+      'standard-1024x1792': 0.08,
+      'standard-1792x1024': 0.08,
+    },
     context: {
       input: {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: true,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1417,14 +1447,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1442,14 +1472,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1474,14 +1504,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1509,14 +1539,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1544,14 +1574,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1578,14 +1608,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1602,14 +1632,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1627,14 +1657,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1652,14 +1682,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1676,14 +1706,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1700,14 +1730,14 @@ export const MODEL_REGISTRY = {
         text: false,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1724,14 +1754,14 @@ export const MODEL_REGISTRY = {
         text: false,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1748,14 +1778,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1772,14 +1802,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1797,14 +1827,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1822,14 +1852,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1847,14 +1877,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1871,14 +1901,14 @@ export const MODEL_REGISTRY = {
         text: false,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1888,21 +1918,21 @@ export const MODEL_REGISTRY = {
     type: 'audio' as const,
     provider: 'openai' as const,
     displayName: 'GPT-4o Transcribe Diarize',
-    description: 'Transcription model that identifies who\'s speaking when',
+    description: "Transcription model that identifies who's speaking when",
     pricing: { input: 2.5, output: 10 },
     context: {
       input: {
         text: false,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1912,7 +1942,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'openai' as const,
     displayName: 'GPT-5 mini',
-    description: 'A faster, cost-efficient version of GPT-5 for well-defined tasks',
+    description:
+      'A faster, cost-efficient version of GPT-5 for well-defined tasks',
     pricing: { input: 0.25, output: 2 },
     benchmarks: {
       intelligence: 11.9,
@@ -1926,14 +1957,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1961,14 +1992,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -1996,14 +2027,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2013,7 +2044,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'openai' as const,
     displayName: 'GPT-5.1',
-    description: 'The best model for coding and agentic tasks with configurable reasoning effort',
+    description:
+      'The best model for coding and agentic tasks with configurable reasoning effort',
     pricing: { input: 1.25, output: 10 },
     benchmarks: {
       intelligence: 27.4,
@@ -2031,14 +2063,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2048,7 +2080,8 @@ export const MODEL_REGISTRY = {
     type: 'chat' as const,
     provider: 'openai' as const,
     displayName: 'GPT-5.2',
-    description: 'The best model for coding and agentic tasks across industries',
+    description:
+      'The best model for coding and agentic tasks across industries',
     pricing: { input: 1.75, output: 14 },
     benchmarks: {
       intelligence: 44.5,
@@ -2066,14 +2099,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: true,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2091,14 +2124,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2116,14 +2149,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2141,14 +2174,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2166,14 +2199,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2191,14 +2224,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2216,14 +2249,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2241,14 +2274,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2264,14 +2297,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2287,14 +2320,14 @@ export const MODEL_REGISTRY = {
         text: true,
         audio: false,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: false,
         audio: true,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
@@ -2310,19 +2343,19 @@ export const MODEL_REGISTRY = {
         text: false,
         audio: true,
         image: false,
-        video: false
+        video: false,
       },
       output: {
         text: true,
         audio: false,
         image: false,
-        video: false
-      }
+        video: false,
+      },
     },
     deprecated: false,
     isAvailable: true,
     lastUpdated: '2026-01-25',
-  }
+  },
 } as const;
 
 export type ModelId = keyof typeof MODEL_REGISTRY;

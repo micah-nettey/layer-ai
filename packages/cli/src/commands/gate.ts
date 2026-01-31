@@ -5,8 +5,9 @@ import { getLayerClient } from '../lib/api-client.js';
 import { pullGatesToConfig } from '../lib/sync.js';
 import { MODEL_REGISTRY } from '@layer-ai/sdk';
 
-export const gateCommand = new Command('gate')
-  .description('Manage Layer gates');
+export const gateCommand = new Command('gate').description(
+  'Manage Layer gates'
+);
 
 gateCommand
   .command('get <name>')
@@ -23,7 +24,9 @@ gateCommand
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to get gate'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -44,11 +47,15 @@ gateCommand
       console.log(chalk.green(`✓ Found ${gateList.length} gate(s):\n`));
 
       for (let gate of gateList) {
-        console.log(chalk.cyan(`  • ${gate.name}`) + chalk.dim(` (${gate.model})`));
+        console.log(
+          chalk.cyan(`  • ${gate.name}`) + chalk.dim(` (${gate.model})`)
+        );
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to list gates'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -58,12 +65,14 @@ gateCommand
   .description('Delete a gate')
   .action(async (name: string) => {
     try {
-      const { confirm } = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'confirm',
-        message: `Are you sure you want to delete '${name}'?`,
-        default: false
-      }]);
+      const { confirm } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: `Are you sure you want to delete '${name}'?`,
+          default: false,
+        },
+      ]);
 
       if (!confirm) {
         console.log(chalk.dim('Cancelled'));
@@ -75,7 +84,9 @@ gateCommand
       console.log(chalk.green(`✓ Deleted gate '${name}'`));
     } catch (error) {
       console.error(chalk.red('✗ Failed to delete gate'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -99,7 +110,9 @@ gateCommand
       console.log(chalk.dim(`\nReasoning: ${suggestions.reasoning}`));
     } catch (error) {
       console.error(chalk.red('✗ Failed to get gate suggestions'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -117,24 +130,24 @@ gateCommand
           type: 'input',
           name: 'name',
           message: 'Gate name:',
-          validate: (input) => input.length > 0 || 'Gate name cannot be empty'
+          validate: (input) => input.length > 0 || 'Gate name cannot be empty',
         },
         {
           type: 'list',
           name: 'model',
           message: 'Select a model:',
           choices: modelChoices,
-          default: 'gpt-4o'
+          default: 'gpt-4o',
         },
         {
           type: 'input',
           name: 'description',
-          message: 'Description (optional):'
+          message: 'Description (optional):',
         },
         {
           type: 'input',
           name: 'systemPrompt',
-          message: 'System prompt (optional):'
+          message: 'System prompt (optional):',
         },
         {
           type: 'input',
@@ -143,24 +156,30 @@ gateCommand
           validate: (input: string) => {
             if (!input || input.trim() === '') return true;
             const num = parseFloat(input);
-            return (!isNaN(num) && num >= 0 && num <= 2) || 'Must be a number between 0 and 2';
+            return (
+              (!isNaN(num) && num >= 0 && num <= 2) ||
+              'Must be a number between 0 and 2'
+            );
           },
           filter: (input: string) => {
             if (!input || input.trim() === '') return undefined;
             return parseFloat(input);
-          }
-        }
+          },
+        },
       ]);
 
       // Build gate config
       const gateConfig: any = {
         name: answers.name,
-        model: answers.model
+        model: answers.model,
       };
 
       if (answers.description) gateConfig.description = answers.description;
       if (answers.systemPrompt) gateConfig.systemPrompt = answers.systemPrompt;
-      if (typeof answers.temperature === 'number' && !isNaN(answers.temperature)) {
+      if (
+        typeof answers.temperature === 'number' &&
+        !isNaN(answers.temperature)
+      ) {
         gateConfig.temperature = answers.temperature;
       }
 
@@ -171,12 +190,14 @@ gateCommand
       console.log(chalk.green(`✓ Created gate '${answers.name}'`));
 
       // Ask if user wants to pull to config file
-      const { shouldPull } = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'shouldPull',
-        message: 'Add this gate to layer.config.yaml?',
-        default: true
-      }]);
+      const { shouldPull } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'shouldPull',
+          message: 'Add this gate to layer.config.yaml?',
+          default: true,
+        },
+      ]);
 
       if (shouldPull) {
         const remoteGates = await layer.gates.list();
@@ -185,7 +206,9 @@ gateCommand
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to create gate'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
@@ -214,7 +237,11 @@ gateCommand
 
       if (Object.keys(updates).length === 0) {
         console.error(chalk.red('✗ No update options provided'));
-        console.log(chalk.dim('Use --model, --description, --temperature, or --system-prompt'));
+        console.log(
+          chalk.dim(
+            'Use --model, --description, --temperature, or --system-prompt'
+          )
+        );
         process.exit(1);
       }
 
@@ -223,12 +250,14 @@ gateCommand
 
       console.log(chalk.green(`✓ Updated gate '${name}'`));
 
-      const { shouldPull } = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'shouldPull',
-        message: 'Update this gate in layer.config.yaml?',
-        default: true
-      }]);
+      const { shouldPull } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'shouldPull',
+          message: 'Update this gate in layer.config.yaml?',
+          default: true,
+        },
+      ]);
 
       if (shouldPull) {
         const remoteGates = await layer.gates.list();
@@ -237,8 +266,9 @@ gateCommand
       }
     } catch (error) {
       console.error(chalk.red('✗ Failed to update gate'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });
-

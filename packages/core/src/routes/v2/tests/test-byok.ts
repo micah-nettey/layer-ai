@@ -32,7 +32,9 @@ async function testBYOK() {
       }
 
       const decryptedKey = decrypt(openaiKey.encryptedKey, encryptionKey);
-      console.log(`  Decrypted key starts with: ${decryptedKey.substring(0, 10)}...`);
+      console.log(
+        `  Decrypted key starts with: ${decryptedKey.substring(0, 10)}...`
+      );
       console.log(`  Decrypted key length: ${decryptedKey.length} characters`);
     } else {
       console.log('✗ No OpenAI key found');
@@ -53,7 +55,9 @@ async function testBYOK() {
       }
 
       const decryptedKey = decrypt(anthropicKey.encryptedKey, encryptionKey);
-      console.log(`  Decrypted key starts with: ${decryptedKey.substring(0, 14)}...`);
+      console.log(
+        `  Decrypted key starts with: ${decryptedKey.substring(0, 14)}...`
+      );
       console.log(`  Decrypted key length: ${decryptedKey.length} characters`);
     } else {
       console.log('✗ No Anthropic key found');
@@ -69,7 +73,6 @@ async function testBYOK() {
     }
 
     console.log('\n✅ BYOK test completed successfully!\n');
-
   } catch (error) {
     console.error('\n❌ BYOK test failed:', error);
     throw error;

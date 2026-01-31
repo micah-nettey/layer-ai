@@ -19,6 +19,7 @@ Your App                    Without Normalization
 ```
 
 Each provider expects different formats, even for the same concepts. This means:
+
 - Writing provider-specific code everywhere
 - Complex migration when switching providers
 - Difficult to support new providers
@@ -57,6 +58,7 @@ All providers must map to these normalized types.
 ### 2. Provider Adapters (The Translators)
 
 Each provider has an adapter that:
+
 - **Receives** normalized requests
 - **Translates** to provider-specific format
 - **Calls** the provider's API
@@ -67,10 +69,10 @@ Each provider has an adapter that:
 class ProviderAdapter {
   // Define mappings for your provider
   protected roleMappings = {
-    system: 'system',      // OpenAI
+    system: 'system', // OpenAI
     // OR
     system: ADAPTER_HANDLED, // Anthropic (needs special handling)
-  }
+  };
 
   // Implement the call method
   async call(request: LayerRequest): Promise<LayerResponse> {
@@ -176,18 +178,21 @@ protected imageDetailMappings = undefined  // Provider doesn't support it
 **Status**: ✅ In Production (Migration in Progress)
 
 **What's Included**:
+
 - Normalized types for chat, image, video, embeddings, TTS
 - Base adapter class with mapping helpers
 - OpenAI adapter (fully implemented)
 - Anthropic & Google adapters (legacy, being migrated)
 
 **What's NOT Included (Yet)**:
+
 - Streaming support
 - Full function calling normalization (basic support exists)
 - Audio input normalization
 - Provider-specific field normalization (voice, aspectRatio, etc.)
 
 **Migration Status**:
+
 ```
 ✅ OpenAI    - Using new adapter
 ⏳ Anthropic - Using legacy implementation
@@ -199,6 +204,7 @@ protected imageDetailMappings = undefined  // Provider doesn't support it
 ### V2: Full Normalization (Planned Q1 2025)
 
 **Goals**:
+
 - Normalize ALL fields, including provider-specific ones
 - Add streaming support with normalized events
 - Full function calling normalization
@@ -206,6 +212,7 @@ protected imageDetailMappings = undefined  // Provider doesn't support it
 - Better error handling and validation
 
 **Example—Normalizing Voice**:
+
 ```typescript
 // V1 (current): Provider-specific strings
 voice: 'alloy' | 'echo' | ...  // OpenAI-specific
@@ -216,6 +223,7 @@ voice: 'professional' | 'casual' | 'energetic'
 ```
 
 **Example—Video Sizes**:
+
 ```typescript
 // V1 (current): Pixel dimensions
 size: '1280x720' | '1024x1792' | ...
@@ -229,12 +237,14 @@ aspectRatio: '16:9' | '9:16' | '1:1'
 ### V3: Smart Routing & Optimization (Planned Q2 2025)
 
 **Goals**:
+
 - Automatic provider selection based on request type
 - Cost optimization across providers
 - Performance-based routing
 - Multi-provider fallback chains
 
 **Example**:
+
 ```typescript
 // Instead of specifying provider
 { model: 'gpt-4o', ... }
@@ -256,6 +266,7 @@ aspectRatio: '16:9' | '9:16' | '1:1'
 1. **Create adapter file**: `apps/api/src/services/providers/{provider}-adapter.ts`
 
 2. **Extend base adapter**:
+
 ```typescript
 export class MyProviderAdapter extends ProviderAdapter {
   protected provider = 'myprovider';
@@ -273,6 +284,7 @@ export class MyProviderAdapter extends ProviderAdapter {
 3. **Create test file**: `test-{provider}-adapter.ts` (see OpenAI example)
 
 4. **Update routing**: Add your adapter to `src/routes/complete.ts`:
+
 ```typescript
 case 'myprovider': {
   const adapter = new MyProviderAdapter();
@@ -292,7 +304,7 @@ The migration is transparent. Your existing code continues to work:
 await layer.chat({
   gate: 'my-gate',
   messages: [{ role: 'user', content: 'Hello!' }],
-})
+});
 ```
 
 ## Architecture Decisions
@@ -307,6 +319,7 @@ await layer.chat({
 ### Why Not GraphQL/OpenAPI/etc.?
 
 We need more than just type definitions:
+
 - Runtime mapping logic (role translations, size conversions)
 - Provider-specific handling (ADAPTER_HANDLED pattern)
 - Cost calculation and tracking
@@ -317,12 +330,14 @@ A custom adapter pattern gives us this flexibility.
 ### Why Adapters vs. Single Service?
 
 **Adapters** (current):
+
 - ✅ Isolated provider logic
 - ✅ Easy to add new providers
 - ✅ Independent testing
 - ✅ Clear separation of concerns
 
 **Single Service** (alternative):
+
 - ❌ God object anti-pattern
 - ❌ Hard to maintain
 - ❌ Tight coupling
@@ -361,5 +376,5 @@ apps/api/src/routes/
 
 ---
 
-*Last Updated: December 2024*
-*Current Version: V1 (Migration in Progress)*
+_Last Updated: December 2024_
+_Current Version: V1 (Migration in Progress)_

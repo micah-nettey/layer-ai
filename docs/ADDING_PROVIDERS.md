@@ -5,6 +5,7 @@ This guide walks through the steps to add a new model provider (like Mistral, Me
 ## Overview
 
 Adding a new provider involves three main components:
+
 1. **Model Registry** - Adding provider models to the registry
 2. **Provider Adapter** - Creating an adapter to interface with the provider's API
 3. **Router Integration** - Connecting the adapter to the complete route
@@ -25,6 +26,7 @@ pnpm add @provider/sdk
 ```
 
 Example:
+
 ```bash
 pnpm add @mistralai/mistralai
 ```
@@ -34,7 +36,12 @@ pnpm add @mistralai/mistralai
 **File:** `packages/sdk/src/types/model-registry.ts`
 
 ```typescript
-export const SUPPORTED_PROVIDERS = ['openai', 'anthropic', 'google', 'mistral'] as const;
+export const SUPPORTED_PROVIDERS = [
+  'openai',
+  'anthropic',
+  'google',
+  'mistral',
+] as const;
 //                                                                      ^^^^^^^^ Add here
 ```
 
@@ -51,7 +58,7 @@ function normalizeProviderName(developer: string): string | null {
   if (lowerDev.includes('open') && lowerDev.includes('ai')) return 'openai';
   if (lowerDev.includes('anthropic')) return 'anthropic';
   if (lowerDev.includes('google')) return 'google';
-  if (lowerDev.includes('mistral')) return 'mistral';  // Add here
+  if (lowerDev.includes('mistral')) return 'mistral'; // Add here
 
   return null;
 }
@@ -60,6 +67,7 @@ function normalizeProviderName(developer: string): string | null {
 ### 1.4 Sync Models from AIMLAPI
 
 Ensure you have these API keys in your `.env`:
+
 - `AIMLAPI_API_KEY`
 - `ARTIFICIAL_ANALYSIS_API_KEY`
 - `ANTHROPIC_API_KEY`
@@ -71,6 +79,7 @@ pnpm run sync:models
 ```
 
 This will:
+
 - Fetch all models from AIMLAPI
 - Filter to your supported providers
 - Enrich chat models with benchmarks and performance data
@@ -128,7 +137,7 @@ export class MistralAdapter extends BaseProviderAdapter {
     request: Extract<LayerRequest, { type: 'chat' }>
   ): Promise<LayerResponse> {
     // Transform Layer request to provider format
-    const messages = request.messages.map(msg => ({
+    const messages = request.messages.map((msg) => ({
       role: this.mapRole(msg.role),
       content: msg.content,
     }));
@@ -174,16 +183,16 @@ export class MistralAdapter extends BaseProviderAdapter {
 
 ### 2.2 Key Methods to Implement
 
-| Method | Purpose |
-|--------|---------|
-| `call()` | Main entry point, routes by request type |
-| `handleChat()` | Chat/completion requests |
-| `handleImageGeneration()` | Image generation (DALL-E, etc.) |
-| `handleEmbeddings()` | Text embeddings |
-| `handleTextToSpeech()` | TTS requests |
-| `handleSpeechToText()` | STT/Whisper requests |
-| `mapRole()` | Map Layer roles to provider roles |
-| `mapFinishReason()` | Normalize finish reasons |
+| Method                    | Purpose                                  |
+| ------------------------- | ---------------------------------------- |
+| `call()`                  | Main entry point, routes by request type |
+| `handleChat()`            | Chat/completion requests                 |
+| `handleImageGeneration()` | Image generation (DALL-E, etc.)          |
+| `handleEmbeddings()`      | Text embeddings                          |
+| `handleTextToSpeech()`    | TTS requests                             |
+| `handleSpeechToText()`    | STT/Whisper requests                     |
+| `mapRole()`               | Map Layer roles to provider roles        |
+| `mapFinishReason()`       | Normalize finish reasons                 |
 
 **Note:** Only implement modalities your provider supports.
 
@@ -212,7 +221,7 @@ function callProvider(request: LayerRequest): Promise<LayerResponse> {
       return new AnthropicAdapter().call(request);
     case 'google':
       return new GoogleAdapter().call(request);
-    case 'mistral':  // Add this
+    case 'mistral': // Add this
       return new MistralAdapter().call(request);
     default:
       throw new Error(`Unknown provider: ${provider}`);
@@ -315,6 +324,7 @@ Return response to client
 ## Reference Implementation
 
 See existing adapters for reference:
+
 - `packages/core/src/services/providers/openai-adapter.ts`
 - `packages/core/src/services/providers/anthropic-adapter.ts`
 - `packages/core/src/services/providers/google-adapter.ts`

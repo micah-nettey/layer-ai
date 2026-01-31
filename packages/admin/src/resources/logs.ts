@@ -15,7 +15,7 @@ export class LogsResource {
 
     return this.client.request<Log[]>({
       method: 'GET',
-      path
+      path,
     });
   }
 }

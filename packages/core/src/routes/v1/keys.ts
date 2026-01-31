@@ -27,7 +27,9 @@ router.get('/', async (req: Request, res: Response) => {
     res.json(keys);
   } catch (error) {
     console.error('Get keys error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to get API keys' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to get API keys' });
   }
 });
 
@@ -37,7 +39,9 @@ router.post('/', async (req: Request, res: Response) => {
     const { name } = req.body;
 
     if (!name) {
-      res.status(400).json({ error: 'bad_request', message: 'Key name required' });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: 'Key name required' });
       return;
     }
 
@@ -57,7 +61,9 @@ router.post('/', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Create key error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to create API key' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to create API key' });
   }
 });
 
@@ -69,14 +75,18 @@ router.delete('/:id', async (req: Request, res: Response) => {
     const deleted = await db.deleteApiKey(id, req.userId!);
 
     if (!deleted) {
-      res.status(404).json({ error: 'not_found', message: 'API key not found' });
+      res
+        .status(404)
+        .json({ error: 'not_found', message: 'API key not found' });
       return;
     }
 
     res.status(204).send();
   } catch (error) {
     console.error('Delete key error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to delete API key' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to delete API key' });
   }
 });
 
