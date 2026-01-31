@@ -17,7 +17,7 @@ import {
 } from '@layer-ai/sdk';
 import { BaseProviderAdapter } from './base-adapter.js';
 import { ADAPTER_HANDLED } from './base-adapter.js';
-import { PROVIDER, type Provider } from "../../lib/provider-constants.js";
+import { PROVIDER, type Provider } from '../../lib/provider-constants.js';
 import { resolveApiKey } from '../../lib/key-resolver.js';
 
 let client: GoogleGenAI | null = null;
@@ -77,19 +77,39 @@ export class GoogleAdapter extends BaseProviderAdapter {
 
   async call(request: LayerRequest, userId?: string): Promise<LayerResponse> {
     // Resolve API key (BYOK → Platform key)
-    const resolved = await resolveApiKey(this.provider, userId, process.env.GOOGLE_API_KEY);
+    const resolved = await resolveApiKey(
+      this.provider,
+      userId,
+      process.env.GOOGLE_API_KEY
+    );
 
     switch (request.type) {
       case 'chat':
         return this.handleChat(request, resolved.key, resolved.usedPlatformKey);
       case 'image':
-        return this.handleImageGeneration(request, resolved.key, resolved.usedPlatformKey);
+        return this.handleImageGeneration(
+          request,
+          resolved.key,
+          resolved.usedPlatformKey
+        );
       case 'embeddings':
-        return this.handleEmbeddings(request, resolved.key, resolved.usedPlatformKey);
+        return this.handleEmbeddings(
+          request,
+          resolved.key,
+          resolved.usedPlatformKey
+        );
       case 'tts':
-        return this.handleTextToSpeech(request, resolved.key, resolved.usedPlatformKey);
+        return this.handleTextToSpeech(
+          request,
+          resolved.key,
+          resolved.usedPlatformKey
+        );
       case 'video':
-        return this.handleVideoGeneration(request, resolved.key, resolved.usedPlatformKey);
+        return this.handleVideoGeneration(
+          request,
+          resolved.key,
+          resolved.usedPlatformKey
+        );
       default:
         throw new Error(`Unknown modality: ${(request as any).type}`);
     }
@@ -159,7 +179,9 @@ export class GoogleAdapter extends BaseProviderAdapter {
       // Handle tool responses
       if (msg.toolCallId && msg.role === 'tool') {
         if (!msg.name) {
-          throw new Error('Tool response messages must include the function name');
+          throw new Error(
+            'Tool response messages must include the function name'
+          );
         }
         parts.push({
           functionResponse: {
@@ -197,7 +219,10 @@ export class GoogleAdapter extends BaseProviderAdapter {
           functionDeclarations: chat.tools.map((tool) => ({
             name: tool.function.name,
             description: tool.function.description,
-            parametersJsonSchema: tool.function.parameters as Record<string, unknown>,
+            parametersJsonSchema: tool.function.parameters as Record<
+              string,
+              unknown
+            >,
           })),
         },
       ];
@@ -223,11 +248,17 @@ export class GoogleAdapter extends BaseProviderAdapter {
         ...(systemInstruction && { systemInstruction }),
         ...(googleTools && { tools: googleTools }),
         ...(toolConfig && { toolConfig }),
-        ...(chat.temperature !== undefined && { temperature: chat.temperature }),
-        ...(chat.maxTokens !== undefined && { maxOutputTokens: chat.maxTokens }),
+        ...(chat.temperature !== undefined && {
+          temperature: chat.temperature,
+        }),
+        ...(chat.maxTokens !== undefined && {
+          maxOutputTokens: chat.maxTokens,
+        }),
         ...(chat.topP !== undefined && { topP: chat.topP }),
-        ...(chat.stopSequences !== undefined && { stopSequences: chat.stopSequences }),
-      }
+        ...(chat.stopSequences !== undefined && {
+          stopSequences: chat.stopSequences,
+        }),
+      },
     });
 
     const candidate = response.candidates?.[0];

@@ -5,6 +5,7 @@ This guide covers the new type-safe methods introduced in SDK v2.5.0 and Core v2
 ## What's New in v2.5.0
 
 Layer SDK now provides **dedicated type-safe methods** for each AI modality:
+
 - `layer.chat()` - Chat completions
 - `layer.image()` - Image generation
 - `layer.video()` - Video generation
@@ -42,10 +43,10 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 // Chat completion
 const response = await layer.complete({
   gate: 'my-gate-id',
-  type: 'chat',  // Generic type field
+  type: 'chat', // Generic type field
   data: {
-    messages: [{ role: 'user', content: 'Hello' }]
-  }
+    messages: [{ role: 'user', content: 'Hello' }],
+  },
 });
 
 // Image generation
@@ -53,8 +54,8 @@ const imageResponse = await layer.complete({
   gate: 'image-gate-id',
   type: 'image',
   data: {
-    prompt: 'A sunset over mountains'
-  }
+    prompt: 'A sunset over mountains',
+  },
 });
 ```
 
@@ -67,18 +68,18 @@ const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 
 // Chat completion - dedicated method with type safety
 const response = await layer.chat({
-  gateId: 'my-gate-id',  // Note: changed from 'gate' to 'gateId'
+  gateId: 'my-gate-id', // Note: changed from 'gate' to 'gateId'
   data: {
-    messages: [{ role: 'user', content: 'Hello' }]
-  }
+    messages: [{ role: 'user', content: 'Hello' }],
+  },
 });
 
 // Image generation - dedicated method
 const imageResponse = await layer.image({
   gateId: 'image-gate-id',
   data: {
-    prompt: 'A sunset over mountains'
-  }
+    prompt: 'A sunset over mountains',
+  },
 });
 ```
 
@@ -100,10 +101,10 @@ const response = await layer.complete({
   data: {
     messages: [
       { role: 'system', content: 'You are helpful' },
-      { role: 'user', content: 'Hello' }
+      { role: 'user', content: 'Hello' },
     ],
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  },
 });
 
 // After
@@ -112,10 +113,10 @@ const response = await layer.chat({
   data: {
     messages: [
       { role: 'system', content: 'You are helpful' },
-      { role: 'user', content: 'Hello' }
+      { role: 'user', content: 'Hello' },
     ],
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  },
 });
 ```
 
@@ -129,8 +130,8 @@ const response = await layer.complete({
   data: {
     prompt: 'A futuristic cityscape',
     size: '1024x1024',
-    quality: 'hd'
-  }
+    quality: 'hd',
+  },
 });
 
 // After
@@ -139,8 +140,8 @@ const response = await layer.image({
   data: {
     prompt: 'A futuristic cityscape',
     size: '1024x1024',
-    quality: 'hd'
-  }
+    quality: 'hd',
+  },
 });
 ```
 
@@ -152,24 +153,24 @@ const response = await layer.complete({
   gate: 'embeddings-gate-id',
   type: 'embeddings',
   data: {
-    input: 'Text to embed'
-  }
+    input: 'Text to embed',
+  },
 });
 
 // After
 const response = await layer.embeddings({
   gateId: 'embeddings-gate-id',
   data: {
-    input: 'Text to embed'
-  }
+    input: 'Text to embed',
+  },
 });
 
 // Multiple texts
 const response = await layer.embeddings({
   gateId: 'embeddings-gate-id',
   data: {
-    input: ['Text 1', 'Text 2', 'Text 3']
-  }
+    input: ['Text 1', 'Text 2', 'Text 3'],
+  },
 });
 ```
 
@@ -182,8 +183,8 @@ const response = await layer.complete({
   type: 'tts',
   data: {
     input: 'Hello, world!',
-    voice: 'alloy'
-  }
+    voice: 'alloy',
+  },
 });
 
 // After
@@ -191,12 +192,12 @@ const response = await layer.tts({
   gateId: 'tts-gate-id',
   data: {
     input: 'Hello, world!',
-    voice: 'alloy'
-  }
+    voice: 'alloy',
+  },
 });
 
-console.log(response.audio.base64);  // Base64 audio data
-console.log(response.audio.format);  // e.g., 'mp3'
+console.log(response.audio.base64); // Base64 audio data
+console.log(response.audio.format); // e.g., 'mp3'
 ```
 
 ### OCR / Document Processing
@@ -207,24 +208,24 @@ const response = await layer.complete({
   gate: 'ocr-gate-id',
   type: 'ocr',
   data: {
-    documentUrl: 'https://example.com/document.pdf'
-  }
+    documentUrl: 'https://example.com/document.pdf',
+  },
 });
 
 // After
 const response = await layer.ocr({
   gateId: 'ocr-gate-id',
   data: {
-    documentUrl: 'https://example.com/document.pdf'
-  }
+    documentUrl: 'https://example.com/document.pdf',
+  },
 });
 
 // Or with image
 const response = await layer.ocr({
   gateId: 'ocr-gate-id',
   data: {
-    imageUrl: 'https://example.com/receipt.jpg'
-  }
+    imageUrl: 'https://example.com/receipt.jpg',
+  },
 });
 ```
 
@@ -295,6 +296,7 @@ Response formats remain consistent across both old and new methods:
 v2.5.0 also includes a fix for task type naming consistency:
 
 **UI now shows internal types with friendly descriptions:**
+
 - `tts` (Text-to-Speech) instead of "Text-to-Speech"
 - `document` (OCR, Processing) instead of "Document Processing"
 - `stt` (Speech-to-Text) instead of "Speech-to-Text"

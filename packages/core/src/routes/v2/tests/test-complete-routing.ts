@@ -11,11 +11,9 @@ async function testFallbackRouting() {
     model: 'claude-sonnet-4-5-20250929', // Primary model
     type: 'chat',
     data: {
-      messages: [
-        { role: 'user', content: 'Hello! Please respond.' }
-      ],
+      messages: [{ role: 'user', content: 'Hello! Please respond.' }],
       maxTokens: 50,
-    }
+    },
   };
 
   console.log('Gate configuration should have:');
@@ -27,7 +25,9 @@ async function testFallbackRouting() {
   console.log('2. If fails, try first fallback (GPT-4o-mini)');
   console.log('3. If fails, try second fallback (GPT-3.5-turbo)');
   console.log('4. Return first successful response');
-  console.log('\nResponse will include "model" field showing which model was used');
+  console.log(
+    '\nResponse will include "model" field showing which model was used'
+  );
 }
 
 async function testRoundRobinRouting() {
@@ -38,11 +38,9 @@ async function testRoundRobinRouting() {
     model: 'claude-sonnet-4-5-20250929',
     type: 'chat',
     data: {
-      messages: [
-        { role: 'user', content: 'Tell me a fun fact.' }
-      ],
+      messages: [{ role: 'user', content: 'Tell me a fun fact.' }],
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Gate configuration should have:');
@@ -50,10 +48,14 @@ async function testRoundRobinRouting() {
   console.log('- routingStrategy: "round-robin"');
   console.log('- fallbackModels: ["gpt-4o-mini", "gpt-4o"]');
   console.log('\nBehavior:');
-  console.log('- Randomly selects one of: [Claude Sonnet, GPT-4o-mini, GPT-4o]');
+  console.log(
+    '- Randomly selects one of: [Claude Sonnet, GPT-4o-mini, GPT-4o]'
+  );
   console.log('- Distributes load across multiple models/providers');
   console.log('- Useful for cost optimization and rate limit management');
-  console.log('\nResponse "model" field shows which model was randomly selected');
+  console.log(
+    '\nResponse "model" field shows which model was randomly selected'
+  );
 }
 
 async function testCrossProviderFallback() {
@@ -68,13 +70,15 @@ async function testCrossProviderFallback() {
         {
           role: 'user',
           content: 'What do you see in this image?',
-          images: [{
-            url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop'
-          }]
-        }
+          images: [
+            {
+              url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop',
+            },
+          ],
+        },
       ],
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Gate configuration:');
@@ -95,9 +99,7 @@ async function testToolCallsFallback() {
     model: 'gpt-4o-mini',
     type: 'chat',
     data: {
-      messages: [
-        { role: 'user', content: 'What is the weather in Tokyo?' }
-      ],
+      messages: [{ role: 'user', content: 'What is the weather in Tokyo?' }],
       tools: [
         {
           type: 'function',
@@ -116,7 +118,7 @@ async function testToolCallsFallback() {
       ],
       toolChoice: 'auto',
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Gate configuration:');
@@ -126,7 +128,9 @@ async function testToolCallsFallback() {
   console.log('\nBehavior:');
   console.log('- All three models support function calling');
   console.log('- Fallback works seamlessly across providers');
-  console.log('- Response includes toolCalls array from whichever model succeeded');
+  console.log(
+    '- Response includes toolCalls array from whichever model succeeded'
+  );
 }
 
 async function testCostOptimization() {
@@ -138,10 +142,10 @@ async function testCostOptimization() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Write a short poem about the ocean.' }
+        { role: 'user', content: 'Write a short poem about the ocean.' },
       ],
       maxTokens: 150,
-    }
+    },
   };
 
   console.log('Gate configuration:');
@@ -169,7 +173,9 @@ async function testProviderSpecificFeatures() {
   console.log('Use for: Image analysis, audio processing');
 
   console.log('\nScenario C: Start with cheapest (GPT-3.5)');
-  console.log('Gate: model=gpt-3.5-turbo, fallback=[gpt-4o-mini, claude-haiku]');
+  console.log(
+    'Gate: model=gpt-3.5-turbo, fallback=[gpt-4o-mini, claude-haiku]'
+  );
   console.log('Use for: Simple tasks, high volume workloads');
 
   console.log('\nThe v2 API makes it easy to switch strategies per gate');

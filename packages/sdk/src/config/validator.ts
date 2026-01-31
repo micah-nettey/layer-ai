@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import type { LayerConfigFile } from '../types/index.js';
-import { ROUTING_STRATEGIES, ANALYSIS_METHODS, REANALYSIS_PERIODS } from '../types/history.js';
+import {
+  ROUTING_STRATEGIES,
+  ANALYSIS_METHODS,
+  REANALYSIS_PERIODS,
+} from '../types/history.js';
 
 const GateConfigSchema = z.object({
   // Required fields
@@ -15,10 +19,7 @@ const GateConfigSchema = z.object({
   topP: z.number().min(0).max(1).optional(),
   routingStrategy: z.enum(ROUTING_STRATEGIES).optional(),
   fallbackModels: z.array(z.string()).optional(),
-  allowOverrides: z.union([
-    z.boolean(),
-    z.record(z.boolean())
-  ]).optional(),
+  allowOverrides: z.union([z.boolean(), z.record(z.boolean())]).optional(),
   tags: z.array(z.string()).optional(),
 
   // Internal fields (layer-ai-internal)
@@ -28,17 +29,21 @@ const GateConfigSchema = z.object({
   analysisMethod: z.enum(ANALYSIS_METHODS).optional(),
   maxCostPer1kTokens: z.number().positive().optional(),
   maxLatencyMs: z.number().positive().optional(),
-  taskAnalysis: z.object({
-    primary: z.string(),
-    alternatives: z.array(z.string()),
-    reasoning: z.string(),
-  }).optional(),
+  taskAnalysis: z
+    .object({
+      primary: z.string(),
+      alternatives: z.array(z.string()),
+      reasoning: z.string(),
+    })
+    .optional(),
   reanalysisPeriod: z.enum(REANALYSIS_PERIODS).optional(),
   autoApplyRecommendations: z.boolean().optional(),
 });
 
 const LayerConfigFileSchema = z.object({
-  gates: z.array(GateConfigSchema).min(1, 'Config must contain at least one gate'),
+  gates: z
+    .array(GateConfigSchema)
+    .min(1, 'Config must contain at least one gate'),
 });
 
 export function validateConfig(data: unknown): LayerConfigFile {

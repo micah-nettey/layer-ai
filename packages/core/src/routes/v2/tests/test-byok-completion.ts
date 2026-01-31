@@ -50,10 +50,16 @@ async function testBYOKCompletion() {
     console.log('Test 2: Anthropic completion with BYOK key');
     console.log('------------------------------------------');
     const anthropicAdapter = new AnthropicAdapter();
-    const anthropicRequest = { ...SIMPLE_REQUEST, model: 'claude-3-haiku-20240307' };
+    const anthropicRequest = {
+      ...SIMPLE_REQUEST,
+      model: 'claude-3-haiku-20240307',
+    };
 
     console.log(`Making request to Anthropic with userId: ${TEST_USER_ID}`);
-    const anthropicResult = await anthropicAdapter.call(anthropicRequest, TEST_USER_ID);
+    const anthropicResult = await anthropicAdapter.call(
+      anthropicRequest,
+      TEST_USER_ID
+    );
     console.log('✓ Anthropic request successful');
     console.log(`Response: ${anthropicResult.content}`);
     console.log('Note: This request used your BYOK Anthropic key\n');
@@ -68,14 +74,15 @@ async function testBYOKCompletion() {
     const googleResult = await googleAdapter.call(googleRequest, TEST_USER_ID);
     console.log('✓ Google request successful');
     console.log(`Response: ${googleResult.content}`);
-    console.log('Note: This request used the platform Google key (no BYOK configured)\n');
+    console.log(
+      'Note: This request used the platform Google key (no BYOK configured)\n'
+    );
 
     console.log('✅ All BYOK completion tests passed!\n');
     console.log('Summary:');
     console.log('- OpenAI: Used BYOK key ✓');
     console.log('- Anthropic: Used BYOK key ✓');
     console.log('- Google: Used platform key (fallback) ✓');
-
   } catch (error) {
     console.error('\n❌ BYOK completion test failed:', error);
     if (error instanceof Error) {

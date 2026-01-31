@@ -20,14 +20,18 @@ export const validateCommand = new Command('validate')
 
       console.log(chalk.green(`✓ Config file is valid!`));
       console.log(chalk.dim(`\nFound ${config.gates.length} gate(s):`));
-      
-      config.gates.forEach((gate, index) => {
-        console.log(chalk.cyan(`  ${index + 1}. ${gate.name}`) + chalk.dim(` (${gate.model})`));
-      });
 
+      config.gates.forEach((gate, index) => {
+        console.log(
+          chalk.cyan(`  ${index + 1}. ${gate.name}`) +
+            chalk.dim(` (${gate.model})`)
+        );
+      });
     } catch (error) {
       console.error(chalk.red('✗ Config validation failed:'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });

@@ -106,7 +106,11 @@ async function testToolCalling() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Use the get_current_time function to tell me what time it is.' },
+        {
+          role: 'user',
+          content:
+            'Use the get_current_time function to tell me what time it is.',
+        },
       ],
       tools: [
         {
@@ -147,7 +151,11 @@ async function testToolCalling() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Use the get_current_time function to tell me what time it is.' },
+        {
+          role: 'user',
+          content:
+            'Use the get_current_time function to tell me what time it is.',
+        },
         {
           role: 'assistant',
           toolCalls: response.toolCalls,

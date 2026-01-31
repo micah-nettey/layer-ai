@@ -31,12 +31,14 @@ Layer AI uses PostgreSQL for the API server.
 ### Install PostgreSQL
 
 **macOS:**
+
 ```bash
 brew install postgresql@14
 brew services start postgresql@14
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib
@@ -83,6 +85,7 @@ JWT_SECRET=your-secret-key-here
 ```
 
 **Generate a JWT Secret:**
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
@@ -110,6 +113,7 @@ pnpm --filter @layer-ai/api dev
 ```
 
 You should see output like:
+
 ```
 ✓ Database connected
 ✓ Migrations up to date
@@ -178,13 +182,13 @@ import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
   apiKey: 'your-api-key-here',
-  baseURL: 'http://localhost:3001'
+  baseURL: 'http://localhost:3001',
 });
 
 async function test() {
   const response = await layer.complete({
     model: 'gpt-4',
-    messages: [{ role: 'user', content: 'Hello!' }]
+    messages: [{ role: 'user', content: 'Hello!' }],
   });
 
   console.log(response.content);
@@ -194,6 +198,7 @@ test();
 ```
 
 Run it:
+
 ```bash
 npx tsx test.ts
 ```
@@ -277,6 +282,7 @@ Run through this checklist to ensure everything is set up correctly:
 **Problem:** API won't start, shows database connection error
 
 **Solutions:**
+
 - Check PostgreSQL is running: `pg_isready`
 - Verify `DATABASE_URL` in `.env`
 - Check port 5432 is not in use: `lsof -i :5432`
@@ -287,6 +293,7 @@ Run through this checklist to ensure everything is set up correctly:
 **Problem:** API server fails to start
 
 **Solutions:**
+
 - Check all required env vars are set in `.env`
 - Look for port conflicts (default 3001): `lsof -i :3001`
 - Check for TypeScript errors: `pnpm build`
@@ -297,6 +304,7 @@ Run through this checklist to ensure everything is set up correctly:
 **Problem:** Database migrations won't run
 
 **Solutions:**
+
 - Ensure database exists: `psql -l | grep layer_db`
 - Check database user has permissions
 - Try dropping and recreating: `dropdb layer_db && createdb layer_db`
@@ -307,6 +315,7 @@ Run through this checklist to ensure everything is set up correctly:
 **Problem:** API returns 401 Unauthorized
 
 **Solutions:**
+
 - Verify `JWT_SECRET` is set in `.env`
 - Check API key format (should start with `sk-`)
 - Try creating a new account and API key
@@ -317,6 +326,7 @@ Run through this checklist to ensure everything is set up correctly:
 **Problem:** Requests to OpenAI, Anthropic, etc. fail
 
 **Solutions:**
+
 - Verify provider API keys are set in `.env`
 - Check API keys are valid (test directly with provider)
 - Review API logs for specific error messages
@@ -377,6 +387,7 @@ pnpm --filter @layer-ai/sdk test:watch
 ### Manual Testing
 
 1. **Test SDK locally:**
+
    ```bash
    cd packages/sdk
    pnpm link --global
@@ -384,6 +395,7 @@ pnpm --filter @layer-ai/sdk test:watch
    ```
 
 2. **Test CLI locally:**
+
    ```bash
    cd packages/cli
    pnpm link --global

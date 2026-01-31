@@ -1,7 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { MODEL_REGISTRY, TaskAnalysis, type ModelType, type ModelEntry } from '@layer-ai/sdk';
+import {
+  MODEL_REGISTRY,
+  TaskAnalysis,
+  type ModelType,
+  type ModelEntry,
+} from '@layer-ai/sdk';
 
-async function detectTaskType(description: string, anthropic: Anthropic): Promise<ModelType> {
+async function detectTaskType(
+  description: string,
+  anthropic: Anthropic
+): Promise<ModelType> {
   const prompt = `Analyze this task description and determine what TYPE of AI task it is.
 
 TASK DESCRIPTION:
@@ -26,10 +34,12 @@ Return ONLY the task type as a single word, nothing else.`;
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 50,
       temperature: 0.0,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
     });
 
     const responseContent = response.content[0];
@@ -39,7 +49,18 @@ Return ONLY the task type as a single word, nothing else.`;
 
     const detectedType = responseContent.text.trim().toLowerCase();
 
-    const validTypes: ModelType[] = ['chat', 'image', 'video', 'audio', 'tts', 'stt', 'embeddings', 'document', 'responses', 'language-completion'];
+    const validTypes: ModelType[] = [
+      'chat',
+      'image',
+      'video',
+      'audio',
+      'tts',
+      'stt',
+      'embeddings',
+      'document',
+      'responses',
+      'language-completion',
+    ];
 
     if (validTypes.includes(detectedType as ModelType)) {
       return detectedType as ModelType;
@@ -61,7 +82,7 @@ export async function analyzeTask(
   }
 ): Promise<TaskAnalysis> {
   const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY
+    apiKey: process.env.ANTHROPIC_API_KEY,
   });
 
   const costWeight = userPreferences?.costWeight ?? 0.33;
@@ -125,13 +146,15 @@ Return JSON with:
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
       temperature: 0.0,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
     });
 
-    const responseContent = response.content[0]
+    const responseContent = response.content[0];
     if (responseContent.type !== 'text') {
       throw new Error('Unexpected response type from Claude');
     }
@@ -140,7 +163,9 @@ Return JSON with:
 
     // Extract JSON from code blocks
     if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+      jsonText = jsonText
+        .replace(/^```(?:json)?\n?/, '')
+        .replace(/\n?```$/, '');
     }
 
     // Extract JSON object if there's additional text after it
@@ -151,13 +176,13 @@ Return JSON with:
 
     const mapping = JSON.parse(jsonText);
 
-    if (typeof(mapping) !== 'object' || Array.isArray(mapping)) {
+    if (typeof mapping !== 'object' || Array.isArray(mapping)) {
       throw new Error('Mapping is in wrong format');
     }
 
     return {
       taskType,
-      ...mapping
+      ...mapping,
     };
   } catch (error) {
     console.error('Failed to find accurate task requirements', error);
@@ -165,7 +190,7 @@ Return JSON with:
       taskType,
       primary: 'gpt-4o',
       alternatives: ['claude-sonnet-4-5-20250929', 'gemini-2.5-flash'],
-      reasoning: 'Task analysis failed, returning safe defaults'
-    }
+      reasoning: 'Task analysis failed, returning safe defaults',
+    };
   }
 }

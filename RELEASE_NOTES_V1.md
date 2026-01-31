@@ -7,6 +7,7 @@ Layer AI v1.0.0 introduces a major architectural change: the SDK has been split 
 ### What Changed?
 
 **Before (v0.x):**
+
 ```typescript
 import { Layer } from '@layer-ai/sdk';
 
@@ -18,6 +19,7 @@ await layer.gates.create({ name: 'new-gate', ... });
 ```
 
 **After (v1.0.0):**
+
 ```typescript
 // Inference operations - lightweight, focused
 import { Layer } from '@layer-ai/sdk';
@@ -46,12 +48,14 @@ await admin.gates.create({ name: 'new-gate', ... });
 **Size:** ~50KB (down from ~150KB)
 
 **API:**
+
 - ✅ `layer.complete()` - Make inference requests
 - ✅ `layer.models.*` - Model registry utilities
 - ✅ All types exported
 - ❌ Admin methods removed (moved to @layer-ai/admin)
 
 **Installation:**
+
 ```bash
 npm install @layer-ai/sdk@^1.0.1
 ```
@@ -63,11 +67,13 @@ npm install @layer-ai/sdk@^1.0.1
 **Size:** ~80KB
 
 **API:**
+
 - ✅ `admin.gates.*` - Gate management
 - ✅ `admin.keys.*` - API key management
 - ✅ `admin.logs.*` - Request logs and analytics
 
 **Installation:**
+
 ```bash
 npm install @layer-ai/admin@^0.1.0
 ```
@@ -79,12 +85,14 @@ All v0.x users must migrate to v1.0.0. See [MIGRATION_V1.md](./MIGRATION_V1.md) 
 ### Key Migration Steps
 
 1. **Install new packages:**
+
    ```bash
    npm uninstall @layer-ai/sdk
    npm install @layer-ai/sdk@^1.0.1 @layer-ai/admin@^0.1.0
    ```
 
 2. **Update imports:**
+
    ```typescript
    // Inference
    import { Layer } from '@layer-ai/sdk';
@@ -94,6 +102,7 @@ All v0.x users must migrate to v1.0.0. See [MIGRATION_V1.md](./MIGRATION_V1.md) 
    ```
 
 3. **Use gate IDs instead of names:**
+
    ```typescript
    // ❌ Old
    await layer.complete({ gate: 'my-gate-name', ... });
@@ -103,6 +112,7 @@ All v0.x users must migrate to v1.0.0. See [MIGRATION_V1.md](./MIGRATION_V1.md) 
    ```
 
 4. **Wrap messages in data object:**
+
    ```typescript
    // ❌ Old
    { gate: 'id', messages: [...] }
@@ -142,7 +152,9 @@ Response structure remains the same:
 {
   content: string;
   model: string;
-  usage: { promptTokens, completionTokens, totalTokens };
+  usage: {
+    (promptTokens, completionTokens, totalTokens);
+  }
   cost: number;
   latencyMs: number;
 }
@@ -171,7 +183,7 @@ import type {
   ApiKey,
   SupportedModel,
   LayerRequest,
-  LayerResponse
+  LayerResponse,
 } from '@layer-ai/sdk';
 ```
 
@@ -203,12 +215,12 @@ import type {
 
 ### Version Matrix
 
-| Package | Version | Status |
-|---------|---------|--------|
-| `@layer-ai/sdk` | v0.x | ⚠️ Deprecated |
-| `@layer-ai/sdk` | v1.0.0+ | ✅ Current |
-| `@layer-ai/admin` | v0.1.0+ | ✅ Current |
-| `@layer-ai/core` | v0.8.18+ | 🔧 Internal |
+| Package           | Version  | Status        |
+| ----------------- | -------- | ------------- |
+| `@layer-ai/sdk`   | v0.x     | ⚠️ Deprecated |
+| `@layer-ai/sdk`   | v1.0.0+  | ✅ Current    |
+| `@layer-ai/admin` | v0.1.0+  | ✅ Current    |
+| `@layer-ai/core`  | v0.8.18+ | 🔧 Internal   |
 
 ### Node.js Support
 

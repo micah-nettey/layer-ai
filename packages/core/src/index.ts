@@ -33,7 +33,9 @@ export const createSessionKey = async (userId: string): Promise<string> => {
   return db.createSessionKey(userId);
 };
 
-export const deleteSessionKeysForUser = async (userId: string): Promise<void> => {
+export const deleteSessionKeysForUser = async (
+  userId: string
+): Promise<void> => {
   const { db } = await import('./lib/db/postgres.js');
   return db.deleteSessionKeysForUser(userId);
 };
@@ -42,4 +44,11 @@ export const deleteSessionKeysForUser = async (userId: string): Promise<void> =>
 export * from './services/task-analysis.js';
 
 // Provider Factory
-export { PROVIDER, PROVIDERS, type Provider, callAdapter, normalizeModelId, getProviderForModel } from './lib/provider-factory.js';
+export {
+  PROVIDER,
+  PROVIDERS,
+  type Provider,
+  callAdapter,
+  normalizeModelId,
+  getProviderForModel,
+} from './lib/provider-factory.js';

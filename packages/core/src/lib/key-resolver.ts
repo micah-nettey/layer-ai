@@ -33,7 +33,10 @@ export async function resolveApiKey(
         return { key: byokKey, usedPlatformKey: false };
       }
     } catch (error) {
-      console.error(`Failed to fetch BYOK key for user ${userId}, provider ${provider}:`, error);
+      console.error(
+        `Failed to fetch BYOK key for user ${userId}, provider ${provider}:`,
+        error
+      );
       // Continue to fallback
     }
   }
@@ -52,7 +55,10 @@ export async function resolveApiKey(
  * @param provider - The provider name
  * @returns The decrypted API key, or null if not found
  */
-async function getUserProviderKey(userId: string, provider: Provider): Promise<string | null> {
+async function getUserProviderKey(
+  userId: string,
+  provider: Provider
+): Promise<string | null> {
   // Dynamically import to avoid circular dependencies
   const { db } = await import('./db/postgres.js');
 

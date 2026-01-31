@@ -12,11 +12,11 @@ async function testChatCompletion() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Say "Hello World" and nothing else.' }
+        { role: 'user', content: 'Say "Hello World" and nothing else.' },
       ],
       temperature: 0.7,
       maxTokens: 10,
-    }
+    },
   };
 
   const response = await adapter.call(request);
@@ -40,13 +40,15 @@ async function testChatWithVision() {
         {
           role: 'user',
           content: 'What color is the sky in this image?',
-          images: [{
-            url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          }]
-        }
+          images: [
+            {
+              url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            },
+          ],
+        },
       ],
       maxTokens: 50,
-    }
+    },
   };
 
   const response = await adapter.call(request);
@@ -65,7 +67,7 @@ async function testToolCalls() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'What is the weather in San Francisco?' }
+        { role: 'user', content: 'What is the weather in San Francisco?' },
       ],
       tools: [
         {
@@ -87,7 +89,7 @@ async function testToolCalls() {
         },
       ],
       maxTokens: 200,
-    }
+    },
   };
 
   const response = await adapter.call(request);
@@ -120,12 +122,16 @@ async function testToolCalls() {
           role: 'tool',
           toolCallId: toolCall.id,
           name: toolCall.function.name,
-          content: JSON.stringify({ temperature: 72, condition: 'sunny', humidity: 65 }),
+          content: JSON.stringify({
+            temperature: 72,
+            condition: 'sunny',
+            humidity: 65,
+          }),
         },
       ],
       tools: request.data.tools,
       maxTokens: 200,
-    }
+    },
   };
 
   const finalResponse = await adapter.call(toolResponseRequest);

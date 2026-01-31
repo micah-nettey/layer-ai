@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import Anthropic from '@anthropic-ai/sdk';
 import { BaseProviderAdapter, ADAPTER_HANDLED } from './base-adapter.js';
 import {
   LayerRequest,
@@ -7,7 +7,7 @@ import {
   FinishReason,
   ToolChoice,
 } from '@layer-ai/sdk';
-import { PROVIDER, type Provider } from "../../lib/provider-constants.js";
+import { PROVIDER, type Provider } from '../../lib/provider-constants.js';
 import { resolveApiKey } from '../../lib/key-resolver.js';
 
 let anthropic: Anthropic | null = null;
@@ -31,11 +31,11 @@ export class AnthropicAdapter extends BaseProviderAdapter {
   protected provider: Provider = PROVIDER.ANTHROPIC;
 
   protected roleMappings: Record<Role, string> = {
-    system: ADAPTER_HANDLED,    // Handled via system parameter
+    system: ADAPTER_HANDLED, // Handled via system parameter
     user: 'user',
     assistant: 'assistant',
-    tool: 'user',               // Tool results are user messages in Anthropic
-    function: 'user',           // Function results are user messages in Anthropic
+    tool: 'user', // Tool results are user messages in Anthropic
+    function: 'user', // Function results are user messages in Anthropic
     model: 'assistant',
     developer: 'user',
   };
@@ -69,7 +69,11 @@ export class AnthropicAdapter extends BaseProviderAdapter {
 
   async call(request: LayerRequest, userId?: string): Promise<LayerResponse> {
     // Resolve API key (BYOK → Platform key)
-    const resolved = await resolveApiKey(this.provider, userId, process.env.ANTHROPIC_API_KEY);
+    const resolved = await resolveApiKey(
+      this.provider,
+      userId,
+      process.env.ANTHROPIC_API_KEY
+    );
 
     switch (request.type) {
       case 'chat':
@@ -87,7 +91,11 @@ export class AnthropicAdapter extends BaseProviderAdapter {
     }
   }
 
-  private async handleChat(request: Extract<LayerRequest, { type: 'chat' }>, apiKey: string, usedPlatformKey: boolean): Promise<LayerResponse> {
+  private async handleChat(
+    request: Extract<LayerRequest, { type: 'chat' }>,
+    apiKey: string,
+    usedPlatformKey: boolean
+  ): Promise<LayerResponse> {
     const startTime = Date.now();
     const client = getAnthropicClient(apiKey);
     const { data: chat, model } = request;
@@ -109,11 +117,13 @@ export class AnthropicAdapter extends BaseProviderAdapter {
       if (msg.toolCallId) {
         messages.push({
           role: 'user',
-          content: [{
-            type: 'tool_result',
-            tool_use_id: msg.toolCallId,
-            content: msg.content || '',
-          }],
+          content: [
+            {
+              type: 'tool_result',
+              tool_use_id: msg.toolCallId,
+              content: msg.content || '',
+            },
+          ],
         });
       }
       // Handle messages with images and/or tool calls
@@ -134,7 +144,7 @@ export class AnthropicAdapter extends BaseProviderAdapter {
                 source: {
                   type: 'url',
                   url: image.url,
-                }
+                },
               });
             } else if (image.base64) {
               content.push({
@@ -142,8 +152,8 @@ export class AnthropicAdapter extends BaseProviderAdapter {
                 source: {
                   type: 'base64',
                   media_type: image.mimeType || 'image/jpeg',
-                  data: image.base64
-                }
+                  data: image.base64,
+                },
               });
             }
           }
@@ -157,12 +167,16 @@ export class AnthropicAdapter extends BaseProviderAdapter {
               id: toolCall.id,
               name: toolCall.function.name,
               input: JSON.parse(toolCall.function.arguments),
-            })
+            });
           }
         }
 
         // Determine role based on content
-        const messageRole = msg.images?.length ? 'user' : (msg.toolCalls?.length ? 'assistant' : role as 'user' | 'assistant');
+        const messageRole = msg.images?.length
+          ? 'user'
+          : msg.toolCalls?.length
+            ? 'assistant'
+            : (role as 'user' | 'assistant');
         messages.push({ role: messageRole, content });
       }
       // Handle regular text messages
@@ -180,15 +194,23 @@ export class AnthropicAdapter extends BaseProviderAdapter {
       max_tokens: chat.maxTokens || 4096,
       ...(systemPrompt && { system: systemPrompt }),
       ...(chat.temperature !== undefined && { temperature: chat.temperature }),
-      ...(chat.temperature === undefined && chat.topP !== undefined && { top_p: chat.topP }),
+      ...(chat.temperature === undefined &&
+        chat.topP !== undefined && { top_p: chat.topP }),
       ...(chat.stopSequences && { stop_sequences: chat.stopSequences }),
       ...(chat.tools && {
-        tools: chat.tools.map(tool => ({
+        tools: chat.tools.map((tool) => ({
           name: tool.function.name,
           description: tool.function.description,
-          input_schema: tool.function.parameters || { type: 'object', properties: {} },
+          input_schema: tool.function.parameters || {
+            type: 'object',
+            properties: {},
+          },
         })) as Anthropic.Tool[],
-        ...(chat.toolChoice && { tool_choice: this.mapToolChoice(chat.toolChoice) as Anthropic.MessageCreateParams['tool_choice'] }),
+        ...(chat.toolChoice && {
+          tool_choice: this.mapToolChoice(
+            chat.toolChoice
+          ) as Anthropic.MessageCreateParams['tool_choice'],
+        }),
       }),
     };
 
@@ -196,17 +218,19 @@ export class AnthropicAdapter extends BaseProviderAdapter {
 
     // Extract text content
     let textContent: string | undefined;
-    const textBlock = response.content.find(block => block.type === 'text');
+    const textBlock = response.content.find((block) => block.type === 'text');
     if (textBlock && textBlock.type === 'text') {
       textContent = textBlock.text;
     }
 
     // Extract tool calls
     let toolCalls: LayerResponse['toolCalls'];
-    const toolUseBlocks = response.content.filter(block => block.type === 'tool_use');
+    const toolUseBlocks = response.content.filter(
+      (block) => block.type === 'tool_use'
+    );
     if (toolUseBlocks.length > 0) {
       toolCalls = toolUseBlocks
-        .map(block => {
+        .map((block) => {
           if (block.type === 'tool_use') {
             return {
               id: block.id,

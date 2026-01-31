@@ -4,11 +4,15 @@ import { db } from '../../lib/db/postgres.js';
 import { cache } from '../../lib/db/redis.js';
 import { authenticate } from '../../middleware/auth.js';
 import { callAdapter } from '../../lib/provider-factory.js';
-import type { CreateGateRequest, UpdateGateRequest, LayerRequest } from '@layer-ai/sdk';
+import type {
+  CreateGateRequest,
+  UpdateGateRequest,
+  LayerRequest,
+} from '@layer-ai/sdk';
 import { MODEL_REGISTRY } from '@layer-ai/sdk';
 import { detectSignificantChanges } from '../../lib/gate-utils.js';
 
-const router: RouterType = Router(); 
+const router: RouterType = Router();
 
 // All routes require authentication (SDK auth with Bearer token)
 router.use(authenticate);
@@ -16,26 +20,51 @@ router.use(authenticate);
 // POST / - Create a new gate
 router.post('/', async (req: Request, res: Response) => {
   if (!req.userId) {
-    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID'});
+    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID' });
     return;
   }
 
   try {
-    const { name, description, taskType, model, systemPrompt, allowOverrides, temperature, maxTokens, topP, tags, routingStrategy, fallbackModels, costWeight, latencyWeight, qualityWeight, reanalysisPeriod, taskAnalysis } = req.body as CreateGateRequest;
+    const {
+      name,
+      description,
+      taskType,
+      model,
+      systemPrompt,
+      allowOverrides,
+      temperature,
+      maxTokens,
+      topP,
+      tags,
+      routingStrategy,
+      fallbackModels,
+      costWeight,
+      latencyWeight,
+      qualityWeight,
+      reanalysisPeriod,
+      taskAnalysis,
+    } = req.body as CreateGateRequest;
 
     if (!name || !model) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing required fields: name and model' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Missing required fields: name and model',
+      });
       return;
     }
 
     if (!MODEL_REGISTRY[model]) {
-      res.status(400).json({ error: 'bad_request', message: `Unsupported model: ${model}` });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: `Unsupported model: ${model}` });
       return;
     }
 
     const existing = await db.getGateByUserAndName(req.userId, name);
     if (existing) {
-      res.status(409).json({ error: 'conflict', message: `Gate "${name}" already exists` });
+      res
+        .status(409)
+        .json({ error: 'conflict', message: `Gate "${name}" already exists` });
       return;
     }
 
@@ -62,14 +91,16 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).json(gate);
   } catch (error) {
     console.error('Create gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to create gate'});
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to create gate' });
   }
 });
 
 // GET / - List all the gates for user
 router.get('/', async (req: Request, res: Response) => {
   if (!req.userId) {
-    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID'});
+    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID' });
     return;
   }
 
@@ -78,7 +109,9 @@ router.get('/', async (req: Request, res: Response) => {
     res.json(gates);
   } catch (error) {
     console.error('List gates error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to list gates'});
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to list gates' });
   }
 });
 
@@ -100,7 +133,9 @@ router.get('/name/:name', async (req: Request, res: Response) => {
     res.json(gate);
   } catch (error) {
     console.error('Get gate by name error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to get gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to get gate' });
   }
 });
 
@@ -112,12 +147,16 @@ router.get('/history', async (req: Request, res: Response) => {
   }
 
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 100;
     const history = await db.getAllGatesHistory(req.userId, limit);
     res.json(history);
   } catch (error) {
     console.error('Get all gates history error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch history' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch history' });
   }
 });
 
@@ -129,12 +168,16 @@ router.get('/activity', async (req: Request, res: Response) => {
   }
 
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 100;
     const activity = await db.getAllGatesActivity(req.userId, limit);
     res.json(activity);
   } catch (error) {
     console.error('Get all gates activity error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch activity' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch activity' });
   }
 });
 
@@ -153,12 +196,16 @@ router.get('/:id/history', async (req: Request, res: Response) => {
       return;
     }
 
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 100;
     const history = await db.getGateHistory(req.params.id, limit);
     res.json(history);
   } catch (error) {
     console.error('Get gate history error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch history' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch history' });
   }
 });
 
@@ -177,12 +224,16 @@ router.get('/:id/activity', async (req: Request, res: Response) => {
       return;
     }
 
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 100;
     const activity = await db.getGateActivity(req.params.id, limit);
     res.json(activity);
   } catch (error) {
     console.error('Get gate activity error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch activity' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch activity' });
   }
 });
 
@@ -209,7 +260,9 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.json(gate);
   } catch (error) {
     console.error('Get gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to get gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to get gate' });
   }
 });
 
@@ -221,7 +274,27 @@ router.patch('/:id', async (req: Request, res: Response) => {
   }
 
   try {
-    const { name, description, taskType, model, systemPrompt, allowOverrides, temperature, maxTokens, topP, tags, routingStrategy, fallbackModels, costWeight, latencyWeight, qualityWeight, analysisMethod, reanalysisPeriod, taskAnalysis, autoApplyRecommendations } = req.body as UpdateGateRequest;
+    const {
+      name,
+      description,
+      taskType,
+      model,
+      systemPrompt,
+      allowOverrides,
+      temperature,
+      maxTokens,
+      topP,
+      tags,
+      routingStrategy,
+      fallbackModels,
+      costWeight,
+      latencyWeight,
+      qualityWeight,
+      analysisMethod,
+      reanalysisPeriod,
+      taskAnalysis,
+      autoApplyRecommendations,
+    } = req.body as UpdateGateRequest;
 
     const existing = await db.getGateById(req.params.id);
 
@@ -236,7 +309,9 @@ router.patch('/:id', async (req: Request, res: Response) => {
     }
 
     if (model && !MODEL_REGISTRY[model]) {
-      res.status(400).json({ error: 'bad_request', message: `Unsupported model: ${model}` });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: `Unsupported model: ${model}` });
       return;
     }
 
@@ -288,16 +363,22 @@ router.patch('/:id', async (req: Request, res: Response) => {
 
       // Log manual update activity with specific changed fields
       await db.createActivityLog(req.params.id, req.userId, 'manual_update', {
-        changedFields
+        changedFields,
       });
     }
 
     await cache.invalidateGate(req.userId, existing.name);
 
-    res.json({ gate: updated, hasChanges: changedFields.length > 0, changedFields });
+    res.json({
+      gate: updated,
+      hasChanges: changedFields.length > 0,
+      changedFields,
+    });
   } catch (error) {
     console.error('Update gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to update gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to update gate' });
   }
 });
 
@@ -327,7 +408,9 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(204).send();
   } catch (error) {
     console.error('Delete gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to delete gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to delete gate' });
   }
 });
 
@@ -343,7 +426,10 @@ router.post('/test', async (req: Request, res: Response) => {
     const { gateId, gate: gateOverride, messages, quickTest } = req.body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing or invalid messages array' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Missing or invalid messages array',
+      });
       return;
     }
 
@@ -367,13 +453,28 @@ router.post('/test', async (req: Request, res: Response) => {
     const finalGate = { ...baseGate, ...gateOverride };
 
     if (!finalGate.model) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing required field: model' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Missing required field: model',
+      });
       return;
     }
 
     const results: {
-      primary?: { model: string; success: boolean; latency: number; content?: string; error?: string };
-      fallback?: Array<{ model: string; success: boolean; latency: number; content?: string; error?: string }>;
+      primary?: {
+        model: string;
+        success: boolean;
+        latency: number;
+        content?: string;
+        error?: string;
+      };
+      fallback?: Array<{
+        model: string;
+        success: boolean;
+        latency: number;
+        content?: string;
+        error?: string;
+      }>;
     } = {};
 
     // Test primary model
@@ -412,7 +513,11 @@ router.post('/test', async (req: Request, res: Response) => {
     }
 
     // Test all fallback models (skip if quickTest flag is true)
-    if (!quickTest && finalGate.fallbackModels && finalGate.fallbackModels.length > 0) {
+    if (
+      !quickTest &&
+      finalGate.fallbackModels &&
+      finalGate.fallbackModels.length > 0
+    ) {
       results.fallback = [];
 
       for (const fallbackModel of finalGate.fallbackModels) {
@@ -455,7 +560,9 @@ router.post('/test', async (req: Request, res: Response) => {
     res.json(results);
   } catch (error) {
     console.error('Test gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to test gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to test gate' });
   }
 });
 
@@ -470,7 +577,10 @@ router.post('/suggestions', async (req: Request, res: Response) => {
     const { description, costWeight, latencyWeight, qualityWeight } = req.body;
 
     if (!description) {
-      res.status(400).json({ error: 'bad_request', message: 'Gate must have a description for AI recommendations' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Gate must have a description for AI recommendations',
+      });
       return;
     }
 
@@ -486,7 +596,10 @@ router.post('/suggestions', async (req: Request, res: Response) => {
     res.json(suggestions);
   } catch (error) {
     console.error('Get suggestions error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch suggestions' });
+    res.status(500).json({
+      error: 'internal_error',
+      message: 'Failed to fetch suggestions',
+    });
   }
 });
 
@@ -501,7 +614,10 @@ router.post('/:id/rollback', async (req: Request, res: Response) => {
     const { historyId } = req.body;
 
     if (!historyId) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing required field: historyId' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Missing required field: historyId',
+      });
       return;
     }
 
@@ -521,7 +637,9 @@ router.post('/:id/rollback', async (req: Request, res: Response) => {
     const updated = await db.rollbackGate(req.params.id, historyId, req.userId);
 
     if (!updated) {
-      res.status(404).json({ error: 'not_found', message: 'History entry not found' });
+      res
+        .status(404)
+        .json({ error: 'not_found', message: 'History entry not found' });
       return;
     }
 
@@ -530,7 +648,9 @@ router.post('/:id/rollback', async (req: Request, res: Response) => {
     res.json(updated);
   } catch (error) {
     console.error('Rollback gate error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to rollback gate' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to rollback gate' });
   }
 });
 

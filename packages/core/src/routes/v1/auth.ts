@@ -12,13 +12,17 @@ router.post('/signup', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ error: 'bad_request', message: 'Email and password required' });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: 'Email and password required' });
       return;
     }
 
     const existing = await db.getUserByEmail(email);
     if (existing) {
-      res.status(409).json({ error: 'conflict', message: 'Email already registered'});
+      res
+        .status(409)
+        .json({ error: 'conflict', message: 'Email already registered' });
       return;
     }
 
@@ -28,7 +32,9 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(201).json({ id: user.id, email: user.email });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to create account '});
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to create account ' });
   }
 });
 
@@ -38,26 +44,34 @@ router.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ error: 'bad_request', message: 'Email and password required' });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: 'Email and password required' });
       return;
     }
 
     const user = await db.getUserByEmail(email);
     if (!user) {
-      res.status(401).json({ error: 'unauthorized', message: 'Invalid credentials' });
-      return; 
+      res
+        .status(401)
+        .json({ error: 'unauthorized', message: 'Invalid credentials' });
+      return;
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      res.status(401).json({ error: 'unauthorized', message: 'Invalid credentials' });
-      return; 
+      res
+        .status(401)
+        .json({ error: 'unauthorized', message: 'Invalid credentials' });
+      return;
     }
 
     res.json({ id: user.id, email: user.email });
   } catch (error) {
     console.error('Login error', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to login' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to login' });
   }
 });
 
@@ -67,19 +81,25 @@ router.post('/token', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ error: 'bad_request', message: 'Email and password required'});
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: 'Email and password required' });
       return;
     }
 
     const user = await db.getUserByEmail(email);
-    if(!user) {
-      res.status(401).json({ error: 'unauthorized', message: 'Invalid credentials' });
+    if (!user) {
+      res
+        .status(401)
+        .json({ error: 'unauthorized', message: 'Invalid credentials' });
       return;
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      res.status(401).json({ error: 'unauthorized', message: 'Invalid credentials'});
+      res
+        .status(401)
+        .json({ error: 'unauthorized', message: 'Invalid credentials' });
       return;
     }
 
@@ -92,7 +112,9 @@ router.post('/token', async (req: Request, res: Response) => {
     res.status(201).json({ apiKey: rawKey });
   } catch (error) {
     console.error('api key creation error', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to create api key' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to create api key' });
   }
 });
 

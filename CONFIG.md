@@ -56,24 +56,24 @@ gates:
 
 ### Required Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Unique identifier for the gate |
+| Field   | Type   | Description                                                                      |
+| ------- | ------ | -------------------------------------------------------------------------------- |
+| `name`  | string | Unique identifier for the gate                                                   |
 | `model` | string | Primary model to use (e.g., `gpt-4o`, `claude-sonnet-4`, `gemini-2.0-flash-exp`) |
 
 ### Optional Fields
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `description` | string | - | Human-readable description of the gate's purpose |
-| `systemPrompt` | string | - | System message sent to the model |
-| `temperature` | number | 0.7 | Sampling temperature (0-2). Higher = more random |
-| `maxTokens` | number | 1000 | Maximum tokens to generate |
-| `topP` | number | 1.0 | Nucleus sampling threshold (0-1) |
-| `allowOverrides` | boolean or array | false | Allow runtime parameter overrides (see below) |
-| `routingStrategy` | string | `single` | Routing strategy: `single`, `fallback`, or `round-robin` |
-| `fallbackModels` | string[] | - | Backup models for fallback routing |
-| `tags` | string[] | - | Tags for organization and filtering |
+| Field             | Type             | Default  | Description                                              |
+| ----------------- | ---------------- | -------- | -------------------------------------------------------- |
+| `description`     | string           | -        | Human-readable description of the gate's purpose         |
+| `systemPrompt`    | string           | -        | System message sent to the model                         |
+| `temperature`     | number           | 0.7      | Sampling temperature (0-2). Higher = more random         |
+| `maxTokens`       | number           | 1000     | Maximum tokens to generate                               |
+| `topP`            | number           | 1.0      | Nucleus sampling threshold (0-1)                         |
+| `allowOverrides`  | boolean or array | false    | Allow runtime parameter overrides (see below)            |
+| `routingStrategy` | string           | `single` | Routing strategy: `single`, `fallback`, or `round-robin` |
+| `fallbackModels`  | string[]         | -        | Backup models for fallback routing                       |
+| `tags`            | string[]         | -        | Tags for organization and filtering                      |
 
 ## Configuration Options
 
@@ -120,6 +120,7 @@ fallbackModels:
 ```
 
 **How it works:**
+
 1. Try primary model (`gpt-4o`)
 2. If it fails, try first fallback (`claude-sonnet-4`)
 3. If that fails, try next fallback (`gemini-2.0-flash-exp`)
@@ -139,6 +140,7 @@ fallbackModels:
 ```
 
 **How it works:**
+
 - Request 1 → `gpt-4o`
 - Request 2 → `claude-sonnet-4`
 - Request 3 → `gemini-2.0-flash-exp`
@@ -149,18 +151,21 @@ fallbackModels:
 Layer supports models from multiple providers:
 
 **OpenAI:**
+
 - `gpt-4o`
 - `gpt-4o-mini`
 - `gpt-4-turbo`
 - `gpt-3.5-turbo`
 
 **Anthropic:**
+
 - `claude-sonnet-4`
 - `claude-3-5-sonnet-20241022`
 - `claude-3-opus-20240229`
 - `claude-3-haiku-20240307`
 
 **Google:**
+
 - `gemini-2.0-flash-exp`
 - `gemini-1.5-pro`
 - `gemini-1.5-flash`
@@ -193,13 +198,13 @@ Currently, the SDK uses gates already deployed to your Layer instance:
 import { Layer } from '@layer-ai/sdk';
 
 const layer = new Layer({
-  apiKey: process.env.LAYER_API_KEY
+  apiKey: process.env.LAYER_API_KEY,
 });
 
 // Use a gate by name
 const response = await layer.complete({
   gate: 'production-gate',
-  prompt: 'Hello!'
+  prompt: 'Hello!',
 });
 ```
 
@@ -211,8 +216,8 @@ If `allowOverrides` is enabled, you can override parameters at request time:
 const response = await layer.complete({
   gate: 'production-gate',
   prompt: 'Write a creative story',
-  temperature: 0.9,  // Override
-  maxTokens: 500     // Override
+  temperature: 0.9, // Override
+  maxTokens: 500, // Override
 });
 ```
 
@@ -224,9 +229,9 @@ Use descriptive, kebab-case names:
 
 ```yaml
 gates:
-  - name: customer-support    # Good
-  - name: code-review         # Good
-  - name: gate1               # Bad - not descriptive
+  - name: customer-support # Good
+  - name: code-review # Good
+  - name: gate1 # Bad - not descriptive
 ```
 
 ### Organize with Tags
@@ -272,8 +277,8 @@ name: production-gate
 model: gpt-4o
 routingStrategy: fallback
 fallbackModels:
-  - claude-sonnet-4    # Different provider
-  - gpt-4o-mini        # Cheaper alternative
+  - claude-sonnet-4 # Different provider
+  - gpt-4o-mini # Cheaper alternative
 ```
 
 ## Environment-Specific Configs
@@ -303,16 +308,19 @@ layer pull --file layer.dev.yaml
 Layer validates your configuration automatically. Common errors:
 
 **Invalid model name:**
+
 ```
 Error: Model 'gpt-5' not found
 ```
 
 **Missing required field:**
+
 ```
 Error: Gate 'my-gate' is missing required field: model
 ```
 
 **Invalid temperature:**
+
 ```
 Error: Temperature must be between 0 and 2
 ```
@@ -328,12 +336,14 @@ layer validate
 ### From Environment Variables
 
 Before (environment variables):
+
 ```bash
 OPENAI_MODEL=gpt-4o
 OPENAI_TEMPERATURE=0.7
 ```
 
 After (Layer config):
+
 ```yaml
 gates:
   - name: default
@@ -344,19 +354,21 @@ gates:
 ### From Direct API Calls
 
 Before (direct OpenAI call):
+
 ```typescript
 const response = await openai.chat.completions.create({
   model: 'gpt-4o',
   messages: [{ role: 'user', content: 'Hello' }],
-  temperature: 0.7
+  temperature: 0.7,
 });
 ```
 
 After (Layer):
+
 ```typescript
 const response = await layer.complete({
   gate: 'default',
-  prompt: 'Hello'
+  prompt: 'Hello',
 });
 ```
 

@@ -3,10 +3,10 @@ import type {
   Gate,
   CreateGateRequest,
   UpdateGateRequest,
-  TaskAnalysis
+  TaskAnalysis,
 } from '@layer-ai/sdk';
 
-export class GatesResource{
+export class GatesResource {
   constructor(private client: LayerAdmin) {}
 
   /**
@@ -16,7 +16,7 @@ export class GatesResource{
     return this.client.request<Gate[]>({
       method: 'GET',
       path: '/v1/gates',
-    })
+    });
   }
 
   /**
@@ -26,7 +26,7 @@ export class GatesResource{
     return this.client.request<Gate>({
       method: 'GET',
       path: `/v1/gates/${id}`,
-    })
+    });
   }
 
   /**
@@ -48,10 +48,10 @@ export class GatesResource{
       method: 'PATCH',
       path: `/v1/gates/${id}`,
       body: data,
-    })
+    });
   }
 
-   /**
+  /**
    * Get AI-powered model suggestions for a gate.
    *
    * Analyzes the gate's task description and returns suggested models
@@ -71,7 +71,7 @@ export class GatesResource{
     await this.client.request<void>({
       method: 'DELETE',
       path: `/v1/gates/${id}`,
-    })
+    });
   }
 
   /**
@@ -86,8 +86,20 @@ export class GatesResource{
     messages: Array<{ role: string; content: string }>;
     quickTest?: boolean;
   }): Promise<{
-    primary?: { model: string; success: boolean; latency: number; content?: string; error?: string };
-    fallback?: Array<{ model: string; success: boolean; latency: number; content?: string; error?: string }>;
+    primary?: {
+      model: string;
+      success: boolean;
+      latency: number;
+      content?: string;
+      error?: string;
+    };
+    fallback?: Array<{
+      model: string;
+      success: boolean;
+      latency: number;
+      content?: string;
+      error?: string;
+    }>;
   }> {
     return this.client.request({
       method: 'POST',

@@ -27,19 +27,20 @@ export async function runMigrations(connectionString?: string) {
     const { rows: completed } = await pool.query(
       'SELECT migration_name FROM schema_migrations ORDER BY migration_name'
     );
-    const completedMigrations = new Set(completed.map(r => r.migration_name));
+    const completedMigrations = new Set(completed.map((r) => r.migration_name));
 
     console.log(`✅ Found ${completedMigrations.size} completed migrations\n`);
 
     const migrationsDir = path.join(__dirname, 'migrations');
-    const files = fs.readdirSync(migrationsDir)
-      .filter(f => f.endsWith('.sql'))
-      .filter(f => !f.startsWith('000_'))
+    const files = fs
+      .readdirSync(migrationsDir)
+      .filter((f) => f.endsWith('.sql'))
+      .filter((f) => !f.startsWith('000_'))
       .sort();
 
     console.log(`📁 Found ${files.length} migration files\n`);
 
-    const pendingMigrations = files.filter(f => !completedMigrations.has(f));
+    const pendingMigrations = files.filter((f) => !completedMigrations.has(f));
 
     if (pendingMigrations.length === 0) {
       console.log('✅ All migrations are up to date!\n');
@@ -47,8 +48,10 @@ export async function runMigrations(connectionString?: string) {
       return;
     }
 
-    console.log(`⚠️  Found ${pendingMigrations.length} pending migration(s):\n`);
-    pendingMigrations.forEach(m => console.log(`   - ${m}`));
+    console.log(
+      `⚠️  Found ${pendingMigrations.length} pending migration(s):\n`
+    );
+    pendingMigrations.forEach((m) => console.log(`   - ${m}`));
     console.log('');
 
     for (const migrationFile of pendingMigrations) {

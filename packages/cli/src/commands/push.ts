@@ -38,8 +38,12 @@ export const pushCommand = new Command('push')
       const remoteGates = await layer.gates.list();
 
       // Build gate maps by name
-      const localGateMap = new Map(localGates.map((g: GateConfig) => [g.name, g]));
-      const remoteGateMap = new Map(remoteGates.map((g: GateConfig) => [g.name, g]));
+      const localGateMap = new Map(
+        localGates.map((g: GateConfig) => [g.name, g])
+      );
+      const remoteGateMap = new Map(
+        remoteGates.map((g: GateConfig) => [g.name, g])
+      );
 
       // Categorize changes
       const toCreate: GateConfig[] = [];
@@ -65,32 +69,46 @@ export const pushCommand = new Command('push')
       // Show summary
       if (toCreate.length > 0) {
         console.log(chalk.green('\nWill create:'));
-        toCreate.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        toCreate.forEach((g: GateConfig) =>
+          console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`))
+        );
       }
 
       if (toUpdate.length > 0) {
-        console.log(chalk.yellow('\nWill update (remote overwritten with local):'));
-        toUpdate.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        console.log(
+          chalk.yellow('\nWill update (remote overwritten with local):')
+        );
+        toUpdate.forEach((g: GateConfig) =>
+          console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`))
+        );
       }
 
       if (toDelete.length > 0) {
         console.log(chalk.red('\nWill delete (not in local config):'));
-        toDelete.forEach((g: GateConfig) => console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`)));
+        toDelete.forEach((g: GateConfig) =>
+          console.log(chalk.cyan(`  • ${g.name}`) + chalk.dim(` (${g.model})`))
+        );
       }
 
-      if (toCreate.length === 0 && toUpdate.length === 0 && toDelete.length === 0) {
+      if (
+        toCreate.length === 0 &&
+        toUpdate.length === 0 &&
+        toDelete.length === 0
+      ) {
         console.log(chalk.green('✓ Remote is already in sync'));
         return;
       }
 
       // Confirm if not forced
       if (!options.force) {
-        const { confirm } = await inquirer.prompt([{
-          type: 'confirm',
-          name: 'confirm',
-          message: 'Apply these changes?',
-          default: true
-        }]);
+        const { confirm } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirm',
+            message: 'Apply these changes?',
+            default: true,
+          },
+        ]);
 
         if (!confirm) {
           console.log(chalk.dim('Cancelled'));
@@ -145,10 +163,16 @@ export const pushCommand = new Command('push')
       }
 
       console.log(chalk.green(`\n✓ Pushed changes to remote`));
-      console.log(chalk.dim(`  ${created} created, ${updated} updated, ${deleted} deleted`));
+      console.log(
+        chalk.dim(
+          `  ${created} created, ${updated} updated, ${deleted} deleted`
+        )
+      );
     } catch (error) {
       console.error(chalk.red('\n✗ Failed to push gates'));
-      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      console.error(
+        chalk.red(error instanceof Error ? error.message : String(error))
+      );
       process.exit(1);
     }
   });

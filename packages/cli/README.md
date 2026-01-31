@@ -37,6 +37,7 @@ layer login
 ```
 
 You'll be prompted for:
+
 - API URL (e.g., `http://localhost:3001`)
 - API Key
 
@@ -91,6 +92,7 @@ layer gates create
 ```
 
 You'll be prompted for:
+
 - Gate name
 - Model (gpt-4o, claude-sonnet-4, gemini-2.0-flash-exp, etc.)
 - Description
@@ -172,6 +174,7 @@ layer pull --force  # Skip confirmation
 ```
 
 This command:
+
 1. Fetches all gates from remote
 2. Compares with your local config
 3. Shows what will be added/updated/deleted
@@ -189,6 +192,7 @@ layer push --force  # Skip confirmation
 ```
 
 This command:
+
 1. Reads your local config file
 2. Compares with remote gates
 3. Shows what will be created/updated/deleted

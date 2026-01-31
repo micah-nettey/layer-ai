@@ -1,26 +1,30 @@
-import type { SupportedModel } from "./gates.js";
-import { TaskAnalysis } from "./smart-routing.js";
-import type { ModelType } from "./model-registry.js";
-import type { AnalysisMethod, RoutingStrategy, ReanalysisPeriod } from "./history.js";
+import type { SupportedModel } from './gates.js';
+import { TaskAnalysis } from './smart-routing.js';
+import type { ModelType } from './model-registry.js';
+import type {
+  AnalysisMethod,
+  RoutingStrategy,
+  ReanalysisPeriod,
+} from './history.js';
 
-// User 
+// User
 export interface User {
-  id: string; 
-  email: string; 
+  id: string;
+  email: string;
   passwordHash: string;
   createdAt: Date;
-  updatedAt: Date; 
+  updatedAt: Date;
 }
 
 // API Key
 export interface ApiKey {
-  id: string; 
+  id: string;
   userId: string;
-  keyHash: string; 
-  keyPrefix: string; 
-  name: string; 
+  keyHash: string;
+  keyPrefix: string;
+  name: string;
   isActive: boolean;
-  lastUsedAt: Date | null; 
+  lastUsedAt: Date | null;
   createdAt: Date;
 }
 
@@ -55,7 +59,7 @@ export interface GateBase {
 export interface Gate extends GateBase {
   id: string;
   userId: string;
-  createdAt: Date; 
+  createdAt: Date;
   updatedAt: Date;
 }
 
@@ -75,21 +79,21 @@ export enum OverrideField {
 
 // Request log
 export interface Request {
-  id: string; 
-  userId: string; 
-  gateId: string | null; 
-  gateName: string | null; 
-  modelRequested: string; 
-  modelUsed: string; 
-  promptTokens: number; 
-  completionTokens: number; 
-  totalTokens: number; 
-  costUsd: number; 
-  latencyMs: number; 
-  success: boolean; 
-  errorMessage: string | null; 
+  id: string;
+  userId: string;
+  gateId: string | null;
+  gateName: string | null;
+  modelRequested: string;
+  modelUsed: string;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  costUsd: number;
+  latencyMs: number;
+  success: boolean;
+  errorMessage: string | null;
   createdAt: Date;
-  userAgent?: string; 
-  ipAddress?: string; 
-  duration?: number; 
+  userAgent?: string;
+  ipAddress?: string;
+  duration?: number;
 }

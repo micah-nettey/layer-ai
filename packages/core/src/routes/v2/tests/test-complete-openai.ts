@@ -12,18 +12,20 @@ async function testBasicChat() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Say "Hello from v2 API" and nothing else.' }
+        { role: 'user', content: 'Say "Hello from v2 API" and nothing else.' },
       ],
       temperature: 0.7,
       maxTokens: 20,
-    }
+    },
   };
 
   console.log('Request:', JSON.stringify(request, null, 2));
   console.log('\nExpected response includes:');
   console.log('- content: string');
   console.log('- model: string');
-  console.log('- finishReason: "completed" | "length_limit" | "tool_call" | "filtered" | "error"');
+  console.log(
+    '- finishReason: "completed" | "length_limit" | "tool_call" | "filtered" | "error"'
+  );
   console.log('- usage: { promptTokens, completionTokens, totalTokens }');
   console.log('- cost: number');
   console.log('- latencyMs: number');
@@ -41,14 +43,16 @@ async function testVision() {
         {
           role: 'user',
           content: 'What color is the sky in this image?',
-          images: [{
-            url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0',
-            detail: 'auto'
-          }]
-        }
+          images: [
+            {
+              url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0',
+              detail: 'auto',
+            },
+          ],
+        },
       ],
       maxTokens: 50,
-    }
+    },
   };
 
   console.log('Request includes image with detail level (auto/low/high)');
@@ -64,7 +68,7 @@ async function testToolCalls() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'What is the weather in San Francisco?' }
+        { role: 'user', content: 'What is the weather in San Francisco?' },
       ],
       tools: [
         {
@@ -87,7 +91,7 @@ async function testToolCalls() {
       ],
       toolChoice: 'auto',
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Request includes tools array and toolChoice');
@@ -106,12 +110,14 @@ async function testImageGeneration() {
       size: '1024x1024',
       quality: 'standard',
       count: 1,
-    }
+    },
   };
 
   console.log('Image generation request format');
   console.log('Response will include images array with URLs');
-  console.log('This is a unique feature to v2 - multiple modalities in one endpoint');
+  console.log(
+    'This is a unique feature to v2 - multiple modalities in one endpoint'
+  );
 }
 
 async function testEmbeddings() {
@@ -124,12 +130,14 @@ async function testEmbeddings() {
     data: {
       input: 'The quick brown fox jumps over the lazy dog',
       dimensions: 1536,
-    }
+    },
   };
 
   console.log('Embeddings request format');
   console.log('Response will include embeddings array (number[][])');
-  console.log('Another unique v2 feature - embeddings through the same endpoint');
+  console.log(
+    'Another unique v2 feature - embeddings through the same endpoint'
+  );
 }
 
 async function testTextToSpeech() {
@@ -143,7 +151,7 @@ async function testTextToSpeech() {
       input: 'Hello, this is a test of the text to speech system.',
       voice: 'alloy',
       responseFormat: 'mp3',
-    }
+    },
   };
 
   console.log('Text-to-speech request format');
@@ -160,11 +168,15 @@ async function testResponseFormat() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Generate a JSON object with name and age fields for a person.' }
+        {
+          role: 'user',
+          content:
+            'Generate a JSON object with name and age fields for a person.',
+        },
       ],
       responseFormat: 'json_object',
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Request with JSON response format');

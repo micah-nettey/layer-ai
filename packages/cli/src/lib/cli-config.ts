@@ -6,7 +6,7 @@ const CONFIG_DIR = path.join(os.homedir(), '.layer');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 export interface CLIConfig {
-  activeProfile: string; 
+  activeProfile: string;
   profiles: Record<string, ProfileConfig>;
 }
 
@@ -22,7 +22,7 @@ export async function loadCLIConfig(): Promise<CLIConfig> {
   } catch {
     return {
       activeProfile: 'default',
-      profiles: {}
+      profiles: {},
     };
   }
 }
@@ -33,7 +33,7 @@ export async function saveCLIConfig(config: CLIConfig): Promise<void> {
 }
 
 export async function getActiveProfile(): Promise<ProfileConfig> {
-  const config = await loadCLIConfig(); 
+  const config = await loadCLIConfig();
   const profile = config.profiles[config.activeProfile];
 
   if (!profile) {

@@ -10,7 +10,11 @@ import { OpenAIAdapter } from '../services/providers/openai-adapter.js';
 import { AnthropicAdapter } from '../services/providers/anthropic-adapter.js';
 import { GoogleAdapter } from '../services/providers/google-adapter.js';
 import { MistralAdapter } from '../services/providers/mistral-adapter.js';
-import type { LayerRequest, LayerResponse, SupportedModel } from '@layer-ai/sdk';
+import type {
+  LayerRequest,
+  LayerResponse,
+  SupportedModel,
+} from '@layer-ai/sdk';
 import { MODEL_REGISTRY } from '@layer-ai/sdk';
 import { PROVIDER, PROVIDERS, type Provider } from './provider-constants.js';
 
@@ -41,7 +45,7 @@ export function normalizeModelId(modelId: string): SupportedModel {
     PROVIDER.OPENAI,
     PROVIDER.ANTHROPIC,
     PROVIDER.GOOGLE,
-    PROVIDER.MISTRAL
+    PROVIDER.MISTRAL,
   ];
   for (const provider of providers) {
     const fullId = `${provider}/${modelId}`;
@@ -70,7 +74,10 @@ export function getProviderForModel(model: SupportedModel): Provider {
  * @param request - The Layer request to execute
  * @param userId - Optional user ID for BYOK key resolution
  */
-export async function callAdapter(request: LayerRequest, userId?: string): Promise<LayerResponse> {
+export async function callAdapter(
+  request: LayerRequest,
+  userId?: string
+): Promise<LayerResponse> {
   const normalizedModel = normalizeModelId(request.model as string);
   const provider = getProviderForModel(normalizedModel);
 

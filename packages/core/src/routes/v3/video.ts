@@ -3,7 +3,14 @@ import type { Router as RouterType } from 'express';
 import { db } from '../../lib/db/postgres.js';
 import { authenticate } from '../../middleware/auth.js';
 import { callAdapter, normalizeModelId } from '../../lib/provider-factory.js';
-import type { LayerRequest, LayerResponse, Gate, SupportedModel, OverrideConfig, VideoGenerationRequest } from '@layer-ai/sdk';
+import type {
+  LayerRequest,
+  LayerResponse,
+  Gate,
+  SupportedModel,
+  OverrideConfig,
+  VideoGenerationRequest,
+} from '@layer-ai/sdk';
 import { OverrideField } from '@layer-ai/sdk';
 
 const router: RouterType = Router();
@@ -17,8 +24,16 @@ interface RoutingResult {
 
 // MARK:- Helper Functions
 
-function isOverrideAllowed(allowOverrides: boolean | OverrideConfig | undefined | null, field: keyof OverrideConfig): boolean {
-  if (allowOverrides === undefined || allowOverrides === null || allowOverrides === true) return true;
+function isOverrideAllowed(
+  allowOverrides: boolean | OverrideConfig | undefined | null,
+  field: keyof OverrideConfig
+): boolean {
+  if (
+    allowOverrides === undefined ||
+    allowOverrides === null ||
+    allowOverrides === true
+  )
+    return true;
   if (allowOverrides === false) return false;
   return allowOverrides[field] ?? false;
 }
@@ -29,7 +44,10 @@ function resolveFinalRequest(
 ): LayerRequest {
   let finalModel = gateConfig.model;
 
-  if (request.model && isOverrideAllowed(gateConfig.allowOverrides, OverrideField.Model)) {
+  if (
+    request.model &&
+    isOverrideAllowed(gateConfig.allowOverrides, OverrideField.Model)
+  ) {
     try {
       finalModel = normalizeModelId(request.model);
     } catch {
@@ -39,12 +57,20 @@ function resolveFinalRequest(
 
   // Apply gate config temperature if not provided in request
   // While most video models don't support temperature, some providers/future models might
-  const videoData: VideoGenerationRequest = { ...request.data } as VideoGenerationRequest;
+  const videoData: VideoGenerationRequest = {
+    ...request.data,
+  } as VideoGenerationRequest;
 
   // Apply temperature from gate config if available
-  if ((videoData as any).temperature === undefined && gateConfig.temperature !== undefined) {
+  if (
+    (videoData as any).temperature === undefined &&
+    gateConfig.temperature !== undefined
+  ) {
     (videoData as any).temperature = gateConfig.temperature;
-  } else if ((videoData as any).temperature !== undefined && !isOverrideAllowed(gateConfig.allowOverrides, OverrideField.Temperature)) {
+  } else if (
+    (videoData as any).temperature !== undefined &&
+    !isOverrideAllowed(gateConfig.allowOverrides, OverrideField.Temperature)
+  ) {
     (videoData as any).temperature = gateConfig.temperature;
   }
 
@@ -56,17 +82,27 @@ function resolveFinalRequest(
   } as LayerRequest;
 }
 
-function getModelsToTry(gateConfig: Gate, primaryModel: SupportedModel): SupportedModel[] {
+function getModelsToTry(
+  gateConfig: Gate,
+  primaryModel: SupportedModel
+): SupportedModel[] {
   const modelsToTry: SupportedModel[] = [primaryModel];
 
-  if (gateConfig.routingStrategy === 'fallback' && gateConfig.fallbackModels?.length) {
+  if (
+    gateConfig.routingStrategy === 'fallback' &&
+    gateConfig.fallbackModels?.length
+  ) {
     modelsToTry.push(...gateConfig.fallbackModels);
   }
 
   return modelsToTry;
 }
 
-async function executeWithFallback(request: LayerRequest, modelsToTry: SupportedModel[], userId?: string): Promise<RoutingResult> {
+async function executeWithFallback(
+  request: LayerRequest,
+  modelsToTry: SupportedModel[],
+  userId?: string
+): Promise<RoutingResult> {
   let result: LayerResponse | null = null;
   let lastError: Error | null = null;
   let modelUsed: SupportedModel = request.model as SupportedModel;
@@ -79,7 +115,10 @@ async function executeWithFallback(request: LayerRequest, modelsToTry: Supported
       break;
     } catch (error) {
       lastError = error as Error;
-      console.log(`Model ${modelToTry} failed, trying next fallback...`, error instanceof Error ? error.message : error);
+      console.log(
+        `Model ${modelToTry} failed, trying next fallback...`,
+        error instanceof Error ? error.message : error
+      );
       continue;
     }
   }
@@ -91,7 +130,11 @@ async function executeWithFallback(request: LayerRequest, modelsToTry: Supported
   return { result, modelUsed };
 }
 
-async function executeWithRoundRobin(gateConfig: Gate, request: LayerRequest, userId?: string): Promise<RoutingResult> {
+async function executeWithRoundRobin(
+  gateConfig: Gate,
+  request: LayerRequest,
+  userId?: string
+): Promise<RoutingResult> {
   if (!gateConfig.fallbackModels?.length) {
     const result = await callAdapter(request, userId);
     return { result, modelUsed: request.model as SupportedModel };
@@ -107,8 +150,15 @@ async function executeWithRoundRobin(gateConfig: Gate, request: LayerRequest, us
   return { result, modelUsed: selectedModel };
 }
 
-async function executeWithRouting(gateConfig: Gate, request: LayerRequest, userId?: string): Promise<RoutingResult> {
-  const modelsToTry = getModelsToTry(gateConfig, request.model as SupportedModel);
+async function executeWithRouting(
+  gateConfig: Gate,
+  request: LayerRequest,
+  userId?: string
+): Promise<RoutingResult> {
+  const modelsToTry = getModelsToTry(
+    gateConfig,
+    request.model as SupportedModel
+  );
 
   switch (gateConfig.routingStrategy) {
     case 'fallback':
@@ -130,7 +180,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
   const startTime = Date.now();
 
   if (!req.userId) {
-    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID'});
+    res.status(401).json({ error: 'unauthorized', message: 'Missing user ID' });
     return;
   }
   const userId = req.userId;
@@ -142,25 +192,44 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     const rawRequest = req.body;
 
     if (!rawRequest.gateId) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing required field: gateId' });
+      res.status(400).json({
+        error: 'bad_request',
+        message: 'Missing required field: gateId',
+      });
       return;
     }
 
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawRequest.gateId);
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        rawRequest.gateId
+      );
     if (!isUUID) {
-      res.status(400).json({ error: 'bad_request', message: 'gateId must be a valid UUID' });
+      res
+        .status(400)
+        .json({ error: 'bad_request', message: 'gateId must be a valid UUID' });
       return;
     }
 
     gateConfig = await db.getGateByUserAndId(userId, rawRequest.gateId);
     if (!gateConfig) {
-      res.status(404).json({ error: 'not_found', message: `Gate with ID "${rawRequest.gateId}" not found` });
+      res.status(404).json({
+        error: 'not_found',
+        message: `Gate with ID "${rawRequest.gateId}" not found`,
+      });
       return;
     }
 
     // Validate video-specific fields
-    if (!rawRequest.data?.prompt || typeof rawRequest.data.prompt !== 'string' || rawRequest.data.prompt.trim().length === 0) {
-      res.status(400).json({ error: 'bad_request', message: 'Missing required field: data.prompt (must be a non-empty string)' });
+    if (
+      !rawRequest.data?.prompt ||
+      typeof rawRequest.data.prompt !== 'string' ||
+      rawRequest.data.prompt.trim().length === 0
+    ) {
+      res.status(400).json({
+        error: 'bad_request',
+        message:
+          'Missing required field: data.prompt (must be a non-empty string)',
+      });
       return;
     }
 
@@ -168,7 +237,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     if (gateConfig.taskType && gateConfig.taskType !== 'video') {
       console.warn(
         `[Type Mismatch] Gate "${gateConfig.name}" (${gateConfig.id}) configured for taskType="${gateConfig.taskType}" ` +
-        `but received request to /v3/video endpoint. Processing as video request.`
+          `but received request to /v3/video endpoint. Processing as video request.`
       );
     }
 
@@ -177,11 +246,15 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       type: 'video',
       data: rawRequest.data,
       model: rawRequest.model,
-      metadata: rawRequest.metadata
+      metadata: rawRequest.metadata,
     } as LayerRequest;
 
     const finalRequest = resolveFinalRequest(gateConfig, request);
-    const { result, modelUsed } = await executeWithRouting(gateConfig, finalRequest, userId);
+    const { result, modelUsed } = await executeWithRouting(
+      gateConfig,
+      finalRequest,
+      userId
+    );
 
     const latencyMs = Date.now() - startTime;
 
@@ -201,7 +274,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       errorMessage: null,
       userAgent: req.headers['user-agent'] || null,
       ipAddress: req.ip || null,
-    }).catch(err => console.error('Failed to log request:', err));
+    }).catch((err) => console.error('Failed to log request:', err));
 
     // Return LayerResponse with additional metadata
     const response: LayerResponse = {
@@ -211,15 +284,16 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
     };
 
     res.json(response);
-  } catch(error) {
+  } catch (error) {
     const latencyMs = Date.now() - startTime;
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
 
     db.logRequest({
       userId,
       gateId: gateConfig?.id || null,
       gateName: req.body?.gate || null,
-      modelRequested: (request?.model || gateConfig?.model) || 'unknown',
+      modelRequested: request?.model || gateConfig?.model || 'unknown',
       modelUsed: null,
       promptTokens: 0,
       completionTokens: 0,
@@ -230,7 +304,7 @@ router.post('/', authenticate, async (req: Request, res: Response) => {
       errorMessage,
       userAgent: req.headers['user-agent'] || null,
       ipAddress: req.ip || null,
-    }).catch(err => console.error('Failed to log request:', err));
+    }).catch((err) => console.error('Failed to log request:', err));
 
     console.error('Video generation error:', error);
     res.status(500).json({ error: 'internal_error', message: errorMessage });

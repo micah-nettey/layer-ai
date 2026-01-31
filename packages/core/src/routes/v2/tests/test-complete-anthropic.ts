@@ -12,18 +12,20 @@ async function testBasicChat() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'Say "Hello from v2 API" and nothing else.' }
+        { role: 'user', content: 'Say "Hello from v2 API" and nothing else.' },
       ],
       temperature: 0.7,
       maxTokens: 20,
-    }
+    },
   };
 
   console.log('Request:', JSON.stringify(request, null, 2));
   console.log('\nExpected response includes:');
   console.log('- content: string');
   console.log('- model: string');
-  console.log('- finishReason: "completed" | "length_limit" | "tool_call" | "filtered" | "error"');
+  console.log(
+    '- finishReason: "completed" | "length_limit" | "tool_call" | "filtered" | "error"'
+  );
   console.log('- usage: { promptTokens, completionTokens, totalTokens }');
   console.log('- cost: number');
   console.log('- latencyMs: number');
@@ -42,13 +44,15 @@ async function testVision() {
         {
           role: 'user',
           content: 'What color is the sky in this image?',
-          images: [{
-            url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          }]
-        }
+          images: [
+            {
+              url: 'https://images.unsplash.com/photo-1765202659641-9ad9facfe5cf?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            },
+          ],
+        },
       ],
       maxTokens: 50,
-    }
+    },
   };
 
   console.log('Request includes image URL in message');
@@ -64,7 +68,7 @@ async function testToolCalls() {
     type: 'chat',
     data: {
       messages: [
-        { role: 'user', content: 'What is the weather in San Francisco?' }
+        { role: 'user', content: 'What is the weather in San Francisco?' },
       ],
       tools: [
         {
@@ -87,11 +91,13 @@ async function testToolCalls() {
       ],
       toolChoice: 'auto',
       maxTokens: 100,
-    }
+    },
   };
 
   console.log('Request includes tools array and toolChoice');
-  console.log('Response will include toolCalls array if Claude wants to call a tool');
+  console.log(
+    'Response will include toolCalls array if Claude wants to call a tool'
+  );
   console.log('This feature is only available in v2 API');
 }
 
@@ -103,15 +109,13 @@ async function testSystemPrompt() {
     model: 'claude-sonnet-4-5-20250929',
     type: 'chat',
     data: {
-      messages: [
-        { role: 'user', content: 'Write a haiku about coding' }
-      ],
+      messages: [{ role: 'user', content: 'Write a haiku about coding' }],
       systemPrompt: 'You are a poetic AI that loves to write haikus.',
       temperature: 1.0,
       topP: 0.9,
       maxTokens: 100,
       stopSequences: ['END'],
-    }
+    },
   };
 
   console.log('Request includes:');
@@ -139,10 +143,16 @@ async function runTests() {
 
   console.log('\n' + '='.repeat(60));
   console.log('Key differences from v1:');
-  console.log('- v1: Simple CompletionRequest (messages, temp, maxTokens, topP)');
-  console.log('- v2: Full LayerRequest (all above + tools, images, stopSeqs, etc)');
+  console.log(
+    '- v1: Simple CompletionRequest (messages, temp, maxTokens, topP)'
+  );
+  console.log(
+    '- v2: Full LayerRequest (all above + tools, images, stopSeqs, etc)'
+  );
   console.log('- v1: Returns CompletionResponse (content, usage)');
-  console.log('- v2: Returns LayerResponse (content, usage, toolCalls, cost, etc)');
+  console.log(
+    '- v2: Returns LayerResponse (content, usage, toolCalls, cost, etc)'
+  );
   console.log('='.repeat(60));
 }
 

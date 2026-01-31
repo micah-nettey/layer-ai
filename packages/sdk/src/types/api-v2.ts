@@ -16,10 +16,7 @@ export type Role =
   | 'model'
   | 'developer';
 
-export type ImageDetail =
-  | 'auto'
-  | 'low'
-  | 'high';
+export type ImageDetail = 'auto' | 'low' | 'high';
 
 export type ImageSize =
   | '256x256'
@@ -30,27 +27,13 @@ export type ImageSize =
   | '1536x1024'
   | '1024x1536';
 
-export type ImageQuality =
-  | 'standard'
-  | 'hd';
+export type ImageQuality = 'standard' | 'hd';
 
-export type ImageStyle =
-  | 'vivid'
-  | 'natural';
+export type ImageStyle = 'vivid' | 'natural';
 
-export type AudioFormat =
-  | 'mp3'
-  | 'opus'
-  | 'aac'
-  | 'flac'
-  | 'wav'
-  | 'pcm';
+export type AudioFormat = 'mp3' | 'opus' | 'aac' | 'flac' | 'wav' | 'pcm';
 
-export type VideoSize =
-  | '720x1280'
-  | '1280x720'
-  | '1024x1792'
-  | '1792x1024';
+export type VideoSize = '720x1280' | '1280x720' | '1024x1792' | '1792x1024';
 
 export type AudioMimeType =
   | 'audio/mpeg'
@@ -84,14 +67,9 @@ export type FinishReason =
   | 'filtered'
   | 'error';
 
-export type ResponseFormatType =
-  | 'text'
-  | 'json_object'
-  | 'json_schema';
+export type ResponseFormatType = 'text' | 'json_object' | 'json_schema';
 
-export type EncodingFormat =
-  | 'float'
-  | 'base64';
+export type EncodingFormat = 'float' | 'base64';
 
 export const ADAPTER_HANDLED = '__ADAPTER_HANDLED__';
 
@@ -114,7 +92,13 @@ type BaseRequest = {
  * Task type determines how request data is interpreted.
  * When omitted, defaults to the gate's configured taskType.
  */
-export type TaskType = 'chat' | 'image' | 'video' | 'embeddings' | 'tts' | 'ocr';
+export type TaskType =
+  | 'chat'
+  | 'image'
+  | 'video'
+  | 'embeddings'
+  | 'tts'
+  | 'ocr';
 
 /**
  * Internal LayerRequest type with required type field (used by API after type resolution)
@@ -153,10 +137,12 @@ export interface ChatRequest {
   stopSequences?: string[];
   frequencyPenalty?: number;
   presencePenalty?: number;
-  responseFormat?: ResponseFormatType | {
-    type: ResponseFormatType;
-    json_schema?: unknown;
-  };
+  responseFormat?:
+    | ResponseFormatType
+    | {
+        type: ResponseFormatType;
+        json_schema?: unknown;
+      };
   seed?: number;
 }
 

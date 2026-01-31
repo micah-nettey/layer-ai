@@ -8,7 +8,6 @@ const router: RouterType = Router();
 // All routes require SDK authentication
 router.use(authenticate);
 
-
 // GET /v1/logs - List request logs
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -77,10 +76,11 @@ router.get('/', async (req: Request, res: Response) => {
     res.json(logs);
   } catch (error) {
     console.error('Logs list error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch logs' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch logs' });
   }
 });
-
 
 // GET /v1/logs/overview - Get logs for api calls
 router.get('/overview', async (req: Request, res: Response) => {
@@ -148,10 +148,11 @@ router.get('/overview', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Analytics overview error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch analytics' });
+    res
+      .status(500)
+      .json({ error: 'internal_error', message: 'Failed to fetch analytics' });
   }
 });
-
 
 // GET /v1/logs/gate/:gateId - Get metrics for a specific gate
 router.get('/gate/:gateId', async (req: Request, res: Response) => {
@@ -166,7 +167,9 @@ router.get('/gate/:gateId', async (req: Request, res: Response) => {
     );
 
     if (gateCheck.rows.length === 0) {
-      return res.status(404).json({ error: 'not_found', message: 'Gate not found' });
+      return res
+        .status(404)
+        .json({ error: 'not_found', message: 'Gate not found' });
     }
 
     // Get gate metrics
@@ -191,7 +194,10 @@ router.get('/gate/:gateId', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Gate metrics error:', error);
-    res.status(500).json({ error: 'internal_error', message: 'Failed to fetch gate metrics' });
+    res.status(500).json({
+      error: 'internal_error',
+      message: 'Failed to fetch gate metrics',
+    });
   }
 });
 

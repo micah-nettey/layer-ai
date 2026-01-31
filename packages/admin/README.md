@@ -20,14 +20,14 @@ yarn add @layer-ai/admin
 import { LayerAdmin } from '@layer-ai/admin';
 
 const admin = new LayerAdmin({
-  apiKey: process.env.LAYER_ADMIN_KEY
+  apiKey: process.env.LAYER_ADMIN_KEY,
 });
 
 // Create a gate
 const gate = await admin.gates.create({
   name: 'my-gate',
   model: 'gpt-4o-mini',
-  systemPrompt: 'You are a helpful assistant'
+  systemPrompt: 'You are a helpful assistant',
 });
 
 console.log(`Created gate with ID: ${gate.id}`);
@@ -57,7 +57,7 @@ List all gates for the authenticated user.
 ```typescript
 const gates = await admin.gates.list();
 
-gates.forEach(gate => {
+gates.forEach((gate) => {
   console.log(`${gate.name} (${gate.id}): ${gate.model}`);
 });
 ```
@@ -77,6 +77,7 @@ console.log(gate.temperature);
 ```
 
 **Parameters:**
+
 - `gateId` (string): Gate UUID
 
 **Returns:** `Gate`
@@ -94,15 +95,16 @@ const gate = await admin.gates.create({
   temperature: 0.7,
   maxTokens: 1000,
   topP: 1.0,
-  allowOverrides: ['temperature', 'maxTokens'],  // or true for all
+  allowOverrides: ['temperature', 'maxTokens'], // or true for all
   routingStrategy: 'fallback',
-  fallbackModels: ['claude-sonnet-4', 'gemini-2.0-flash-exp']
+  fallbackModels: ['claude-sonnet-4', 'gemini-2.0-flash-exp'],
 });
 
-console.log(`Gate ID: ${gate.id}`);  // Use this ID for completions
+console.log(`Gate ID: ${gate.id}`); // Use this ID for completions
 ```
 
 **Parameters:**
+
 - `name` (string, required): Gate name (used only for creation)
 - `model` (string, required): Primary model
 - `description` (string, optional): Gate description
@@ -124,11 +126,12 @@ Update an existing gate.
 await admin.gates.update('435282da-4548-4e08-8f9e-a6104803fb8a', {
   temperature: 0.8,
   maxTokens: 1500,
-  fallbackModels: ['claude-sonnet-4']
+  fallbackModels: ['claude-sonnet-4'],
 });
 ```
 
 **Parameters:**
+
 - `gateId` (string): Gate UUID
 - `data` (object): Fields to update (same as create, except `name`)
 
@@ -143,6 +146,7 @@ await admin.gates.delete('435282da-4548-4e08-8f9e-a6104803fb8a');
 ```
 
 **Parameters:**
+
 - `gateId` (string): Gate UUID
 
 **Returns:** `void`
@@ -152,7 +156,9 @@ await admin.gates.delete('435282da-4548-4e08-8f9e-a6104803fb8a');
 Get AI-powered model recommendations for a gate.
 
 ```typescript
-const suggestions = await admin.gates.suggestions('435282da-4548-4e08-8f9e-a6104803fb8a');
+const suggestions = await admin.gates.suggestions(
+  '435282da-4548-4e08-8f9e-a6104803fb8a'
+);
 
 console.log(`Primary: ${suggestions.primary}`);
 console.log(`Alternatives: ${suggestions.alternatives.join(', ')}`);
@@ -160,6 +166,7 @@ console.log(`Reasoning: ${suggestions.reasoning}`);
 ```
 
 **Parameters:**
+
 - `gateId` (string): Gate UUID
 
 **Returns:** `TaskAnalysis`
@@ -173,7 +180,7 @@ List all API keys.
 ```typescript
 const keys = await admin.keys.list();
 
-keys.forEach(key => {
+keys.forEach((key) => {
   console.log(`${key.name}: ${key.keyPrefix}...`);
   console.log(`Created: ${key.createdAt}`);
   console.log(`Last used: ${key.lastUsedAt || 'Never'}`);
@@ -189,12 +196,13 @@ Create a new API key.
 ```typescript
 const result = await admin.keys.create({ name: 'production-api-key' });
 
-console.log('API Key:', result.key);  // Save this - shown only once!
+console.log('API Key:', result.key); // Save this - shown only once!
 console.log('Key ID:', result.id);
 console.log('Prefix:', result.keyPrefix);
 ```
 
 **Parameters:**
+
 - `name` (string): Key name
 
 **Returns:** `CreateKeyResponse` (includes full `key` - only shown once)
@@ -210,6 +218,7 @@ await admin.keys.delete('key-id-here');
 ```
 
 **Parameters:**
+
 - `keyId` (string): API key ID
 
 **Returns:** `void`
@@ -224,16 +233,16 @@ List request logs with optional filtering.
 // Get recent logs
 const logs = await admin.logs.list({
   limit: 100,
-  offset: 0
+  offset: 0,
 });
 
 // Filter by gate
 const gateLogs = await admin.logs.list({
   gateId: '435282da-4548-4e08-8f9e-a6104803fb8a',
-  limit: 50
+  limit: 50,
 });
 
-logs.forEach(log => {
+logs.forEach((log) => {
   console.log(`${log.timestamp}: ${log.model}`);
   console.log(`Tokens: ${log.usage.totalTokens}`);
   console.log(`Cost: $${log.cost}`);
@@ -242,6 +251,7 @@ logs.forEach(log => {
 ```
 
 **Parameters:**
+
 - `limit` (number, optional): Number of logs to return
 - `offset` (number, optional): Pagination offset
 - `gateId` (string, optional): Filter by gate ID
@@ -276,17 +286,17 @@ const admin = new LayerAdmin({ apiKey: process.env.LAYER_ADMIN_KEY });
 const gate = await admin.gates.create({
   name: 'production-gate',
   model: 'gpt-4o',
-  temperature: 0.7
+  temperature: 0.7,
 });
 
 // Inference operations - actual LLM calls
 const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
 
 const response = await layer.complete({
-  gate: gate.id,  // Use the ID from admin operations
+  gate: gate.id, // Use the ID from admin operations
   data: {
-    messages: [{ role: 'user', content: 'Hello!' }]
-  }
+    messages: [{ role: 'user', content: 'Hello!' }],
+  },
 });
 ```
 
@@ -305,13 +315,13 @@ const productionGate = await admin.gates.create({
   model: 'gpt-4o',
   temperature: 0.7,
   routingStrategy: 'fallback',
-  fallbackModels: ['claude-sonnet-4', 'gemini-2.0-flash-exp']
+  fallbackModels: ['claude-sonnet-4', 'gemini-2.0-flash-exp'],
 });
 
 const devGate = await admin.gates.create({
   name: 'dev-chatbot',
   model: 'gpt-4o-mini',
-  temperature: 0.5
+  temperature: 0.5,
 });
 
 console.log('Production Gate ID:', productionGate.id);
@@ -324,16 +334,17 @@ console.log('Development Gate ID:', devGate.id);
 // Update gate based on analytics
 const logs = await admin.logs.list({
   gateId: 'gate-id',
-  limit: 1000
+  limit: 1000,
 });
 
-const avgLatency = logs.reduce((sum, log) => sum + log.latencyMs, 0) / logs.length;
+const avgLatency =
+  logs.reduce((sum, log) => sum + log.latencyMs, 0) / logs.length;
 
 if (avgLatency > 2000) {
   // Switch to faster model
   await admin.gates.update('gate-id', {
     model: 'gpt-4o-mini',
-    fallbackModels: ['gemini-2.0-flash-exp']
+    fallbackModels: ['gemini-2.0-flash-exp'],
   });
 }
 ```
@@ -348,9 +359,12 @@ const newKey = await admin.keys.create({ name: 'app-key-2026-01' });
 await saveToVault(newKey.key);
 
 // Delete old key after grace period
-setTimeout(async () => {
-  await admin.keys.delete('old-key-id');
-}, 7 * 24 * 60 * 60 * 1000); // 7 days
+setTimeout(
+  async () => {
+    await admin.keys.delete('old-key-id');
+  },
+  7 * 24 * 60 * 60 * 1000
+); // 7 days
 ```
 
 ### Cost Monitoring
@@ -366,10 +380,13 @@ console.log(`Total cost: $${totalCost.toFixed(2)}`);
 console.log(`Total tokens: ${totalTokens.toLocaleString()}`);
 
 // Group by gate
-const costByGate = logs.reduce((acc, log) => {
-  acc[log.gateId] = (acc[log.gateId] || 0) + log.cost;
-  return acc;
-}, {} as Record<string, number>);
+const costByGate = logs.reduce(
+  (acc, log) => {
+    acc[log.gateId] = (acc[log.gateId] || 0) + log.cost;
+    return acc;
+  },
+  {} as Record<string, number>
+);
 
 console.log('Cost by gate:', costByGate);
 ```
@@ -380,7 +397,7 @@ console.log('Cost by gate:', costByGate);
 try {
   const gate = await admin.gates.create({
     name: 'my-gate',
-    model: 'gpt-4o'
+    model: 'gpt-4o',
   });
 } catch (error) {
   if (error instanceof Error) {
@@ -408,7 +425,7 @@ await admin.gates.update(gate.id, { temperature: 0.8 });
 await admin.gates.delete(gate.id);
 
 // ❌ Wrong: Cannot use name for update/delete
-await admin.gates.update('my-gate', { temperature: 0.8 });  // Error!
+await admin.gates.update('my-gate', { temperature: 0.8 }); // Error!
 ```
 
 ### API Key Security

@@ -70,7 +70,11 @@ interface RegistryResponse {
 }
 
 // Helper function to format an object as TypeScript literal (not JSON)
-function formatObjectLiteral(obj: any, indent: string = '    ', depth: number = 0): string {
+function formatObjectLiteral(
+  obj: any,
+  indent: string = '    ',
+  depth: number = 0
+): string {
   if (obj === null || obj === undefined) {
     return 'undefined';
   }
@@ -85,7 +89,9 @@ function formatObjectLiteral(obj: any, indent: string = '    ', depth: number = 
 
   if (Array.isArray(obj)) {
     if (obj.length === 0) return '[]';
-    const items = obj.map(item => formatObjectLiteral(item, indent, depth + 1)).join(', ');
+    const items = obj
+      .map((item) => formatObjectLiteral(item, indent, depth + 1))
+      .join(', ');
     return `[${items}]`;
   }
 
@@ -96,10 +102,12 @@ function formatObjectLiteral(obj: any, indent: string = '    ', depth: number = 
     const currentIndent = indent.repeat(depth);
     const nextIndent = indent.repeat(depth + 1);
 
-    const props = keys.map(key => {
-      const value = formatObjectLiteral(obj[key], indent, depth + 1);
-      return `${nextIndent}${key}: ${value}`;
-    }).join(',\n');
+    const props = keys
+      .map((key) => {
+        const value = formatObjectLiteral(obj[key], indent, depth + 1);
+        return `${nextIndent}${key}: ${value}`;
+      })
+      .join(',\n');
 
     return `{\n${props}\n${currentIndent}}`;
   }
@@ -122,7 +130,9 @@ function formatModelEntry(model: ModelEntry, indent: string = '    '): string {
   }
 
   if (model.pricing) {
-    lines.push(`${indent}pricing: { ${model.pricing.input !== undefined ? `input: ${model.pricing.input}` : ''}${model.pricing.input !== undefined && model.pricing.output !== undefined ? ', ' : ''}${model.pricing.output !== undefined ? `output: ${model.pricing.output}` : ''} },`);
+    lines.push(
+      `${indent}pricing: { ${model.pricing.input !== undefined ? `input: ${model.pricing.input}` : ''}${model.pricing.input !== undefined && model.pricing.output !== undefined ? ', ' : ''}${model.pricing.output !== undefined ? `output: ${model.pricing.output}` : ''} },`
+    );
   }
 
   if (model.imagePricing !== undefined) {
@@ -140,15 +150,20 @@ function formatModelEntry(model: ModelEntry, indent: string = '    '): string {
 
   if (model.benchmarks) {
     const benchmarkParts: string[] = [];
-    if (model.benchmarks.intelligence !== undefined) benchmarkParts.push(`intelligence: ${model.benchmarks.intelligence}`);
-    if (model.benchmarks.coding !== undefined) benchmarkParts.push(`coding: ${model.benchmarks.coding}`);
-    if (model.benchmarks.math !== undefined) benchmarkParts.push(`math: ${model.benchmarks.math}`);
-    if (model.benchmarks.mmluPro !== undefined) benchmarkParts.push(`mmluPro: ${model.benchmarks.mmluPro}`);
-    if (model.benchmarks.gpqa !== undefined) benchmarkParts.push(`gpqa: ${model.benchmarks.gpqa}`);
+    if (model.benchmarks.intelligence !== undefined)
+      benchmarkParts.push(`intelligence: ${model.benchmarks.intelligence}`);
+    if (model.benchmarks.coding !== undefined)
+      benchmarkParts.push(`coding: ${model.benchmarks.coding}`);
+    if (model.benchmarks.math !== undefined)
+      benchmarkParts.push(`math: ${model.benchmarks.math}`);
+    if (model.benchmarks.mmluPro !== undefined)
+      benchmarkParts.push(`mmluPro: ${model.benchmarks.mmluPro}`);
+    if (model.benchmarks.gpqa !== undefined)
+      benchmarkParts.push(`gpqa: ${model.benchmarks.gpqa}`);
 
     if (benchmarkParts.length > 0) {
       lines.push(`${indent}benchmarks: {`);
-      benchmarkParts.forEach(part => {
+      benchmarkParts.forEach((part) => {
         lines.push(`${indent}  ${part},`);
       });
       lines.push(`${indent}},`);
@@ -157,13 +172,20 @@ function formatModelEntry(model: ModelEntry, indent: string = '    '): string {
 
   if (model.performance) {
     const perfParts: string[] = [];
-    if (model.performance.outputTokenPerSecond !== undefined) perfParts.push(`outputTokenPerSecond: ${model.performance.outputTokenPerSecond}`);
-    if (model.performance.timeTofirstToken !== undefined) perfParts.push(`timeTofirstToken: ${model.performance.timeTofirstToken}`);
-    if (model.performance.intelligenceScore !== undefined) perfParts.push(`intelligenceScore: ${model.performance.intelligenceScore}`);
+    if (model.performance.outputTokenPerSecond !== undefined)
+      perfParts.push(
+        `outputTokenPerSecond: ${model.performance.outputTokenPerSecond}`
+      );
+    if (model.performance.timeTofirstToken !== undefined)
+      perfParts.push(`timeTofirstToken: ${model.performance.timeTofirstToken}`);
+    if (model.performance.intelligenceScore !== undefined)
+      perfParts.push(
+        `intelligenceScore: ${model.performance.intelligenceScore}`
+      );
 
     if (perfParts.length > 0) {
       lines.push(`${indent}performance: {`);
-      perfParts.forEach(part => {
+      perfParts.forEach((part) => {
         lines.push(`${indent}  ${part},`);
       });
       lines.push(`${indent}},`);
@@ -176,9 +198,10 @@ function formatModelEntry(model: ModelEntry, indent: string = '    '): string {
 
   if (model.context) {
     const contextLiteral = formatObjectLiteral(model.context, '  ', 0);
-    const formattedContext = contextLiteral.split('\n').map((line, i) =>
-      i === 0 ? line : `${indent}${line}`
-    ).join('\n');
+    const formattedContext = contextLiteral
+      .split('\n')
+      .map((line, i) => (i === 0 ? line : `${indent}${line}`))
+      .join('\n');
     lines.push(`${indent}context: ${formattedContext},`);
   }
 
@@ -361,7 +384,7 @@ async function syncRegistry() {
       `${internalApiUrl}/api/model-registry/latest`,
       {
         headers: {
-          'Authorization': `Bearer ${internalApiKey}`,
+          Authorization: `Bearer ${internalApiKey}`,
         },
       }
     );
@@ -371,7 +394,7 @@ async function syncRegistry() {
       throw new Error(`API error (${response.status}): ${errorText}`);
     }
 
-    const data = await response.json() as RegistryResponse;
+    const data = (await response.json()) as RegistryResponse;
 
     console.log(`✅ Fetched ${data.metadata.totalModels} models`);
     console.log(`📅 Registry version: ${data.version}`);
@@ -381,15 +404,22 @@ async function syncRegistry() {
     const tsContent = generateTypeScriptFile(data);
 
     // 3. Write to file
-    const filePath = path.join(__dirname, '../packages/sdk/src/types/model-registry.ts');
+    const filePath = path.join(
+      __dirname,
+      '../packages/sdk/src/types/model-registry.ts'
+    );
     fs.writeFileSync(filePath, tsContent, 'utf-8');
 
     console.log('✅ Updated model-registry.ts\n');
     console.log('📋 Next steps:');
-    console.log('  1. Review: git diff packages/sdk/src/types/model-registry.ts');
+    console.log(
+      '  1. Review: git diff packages/sdk/src/types/model-registry.ts'
+    );
     console.log('  2. Build: pnpm build');
     console.log('  3. Commit: git commit -m "chore: update model registry"');
-    console.log('  4. Release: Consider SDK version bump if significant changes\n');
+    console.log(
+      '  4. Release: Consider SDK version bump if significant changes\n'
+    );
   } catch (error) {
     console.error('❌ Error syncing registry:');
     console.error(error);
