@@ -232,6 +232,121 @@ Type-safe optical character recognition and document processing.
 }
 ```
 
+## Advanced Usage Patterns
+
+### Streaming Completions
+For real-time user interfaces, use the `stream: true` option to receive text chunks as they are generated.
+
+```typescript
+import { Layer } from '@layer-ai/sdk';
+import type { ChatResponseChunk } from '@layer-ai/sdk';
+
+const layer = new Layer({ apiKey: process.env.LAYER_API_KEY });
+
+const stream = await layer.chat({
+  gateId: 'your-gate-uuid',
+  data: {
+    messages: [{ role: 'user', content: 'Explain the theory of relativity' }],
+    stream: true
+  }
+});
+
+// Type-safe iteration over the stream
+for await (const chunk: ChatResponseChunk of stream) {
+  process.stdout.write(chunk.content);
+}
+```
+### Professional Error Handling
+
+The SDK provides a `LayerError` class to help you distinguish between API errors, authentication issues, and network failures.
+
+```typescript
+import { Layer, LayerError } from '@layer-ai/sdk';
+
+try {
+  const response = await layer.chat({
+    gateId: 'my-gate-id',
+    data: { messages: [{ role: 'user', content: 'Hello' }] }
+  });
+} catch (error) {
+  if (error instanceof LayerError) {
+    // Handle SDK-specific errors (Rate limits, Invalid API Key, etc.)
+    console.error(`Layer Error [${error.code}]: ${error.message}`);
+  } else {
+    // Handle generic runtime or connection errors
+    console.error('Unexpected error:', error);
+  }
+}
+```
+### Provide Comparison & Model Overrrides
+
+You can use a single Gate to compare performance across different providers by overriding the model parameter.
+
+```typescript
+const providers = ['gpt-4o', 'claude-3-5-sonnet', 'gemini-1.5-pro'];
+
+for (const model of providers) {
+  console.log(`Testing with ${model}...`);
+  
+  const response = await layer.chat({
+    gateId: 'universal-gate-id',
+    model: model, // Overriding the gate's default model
+    data: {
+      messages: [{ role: 'user', content: 'What is the best way to bake sourdough?' }]
+    }
+  });
+
+  console.log(`${model} response:`, response.content);
+}
+```
+
+## Configuration Reference
+
+### SDK Constructor Options
+When initializing the `Layer` client, you can pass the following configuration:
+
+| Option | Type | Required | Description | Default |
+| :--- | :--- | :--- | :--- | :--- |
+| `apiKey` | `string` | **Yes** | Your Layer API Key. | - |
+| `baseUrl` | `string` | No | Override the API endpoint for self-hosting. | `https://api.uselayer.ai` |
+| `timeout` | `number` | No | Request timeout in milliseconds. | `30000` |
+| `maxRetries` | `number` | No | Number of automatic retries on 5xx errors. | `2` |
+
+### Chat Request Data Options
+The `data` object within `layer.chat()` supports these parameters:
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `messages` | `Message[]` | Array of roles ('system', 'user', 'assistant') and content. |
+| `temperature` | `number` | Sampling temperature (0.0 to 2.0). |
+| `maxTokens` | `number` | The maximum number of tokens to generate. |
+| `stream` | `boolean` | Whether to stream the response as chunks. |
+
+---
+
+## Best Practices
+
+### Secure Your API Keys
+Never commit your `LAYER_API_KEY` to version control. Always use environment variables.
+
+```typescript
+// .env file
+// LAYER_API_KEY=your_secret_key
+
+// Use process.env in your code
+const layer = new Layer({
+  apiKey: process.env.LAYER_API_KEY!
+});
+```
+### Use Specific Gate IDs
+While the SDK supports legacy routing, using the **Gate UUID** ensures your requests are routed through the exact configuration you defined in the dashboard.
+
+### Implement Global Catch-Alls
+In addition to specific `LayerError` handling, ensure your application has a global error handler to prevent crashes during network outages.
+
+### Leverage Smart Routing for Cost Control
+Instead of hardcoding expensive models like `gpt-4o`, configure a **Gate** with smart routing strategies to automatically use cheaper models for simple tasks.
+
 ### `layer.complete(request)` (v2 Legacy)
 
 Send a generic completion request through a gate. This method remains available for backwards compatibility.
